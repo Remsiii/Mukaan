@@ -125,32 +125,30 @@ export default function Footer() {
             Datenschutz
           </a>
         </motion.div>
-
         <motion.div
-          variants={itemVariants}
-          className="mt-8 flex justify-center md:order-2"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+          className="mt-8 flex justify-center space-x-4"
         >
-          <div className="flex flex-col items-center gap-4 sm:flex-row">
-            <span className="text-gray-400 text-center sm:text-left">Finde mich auf Social Media:</span>
-            <div className="grid grid-cols-3 gap-4 sm:flex sm:flex-row">
-              {socialLinks.map((item) => (
-                <motion.a
-                  key={item.name}
-                  href={item.href}
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="text-gray-400 hover:text-gray-300 bg-gray-800 p-2 rounded-full flex items-center justify-center w-10 h-10"
-                >
-                  <span className="sr-only">{item.name}</span>
-                  <img
-                    src={`/images/social/${item.icon}`}
-                    alt={item.name}
-                    className="h-4 w-4 filter invert"
-                  />
-                </motion.a>
-              ))}
-            </div>
-          </div>
+          <span className="text-gray-400 text-center sm:text-left">Finde mich auf Social Media:</span>
+          {socialLinks.map((item) => (
+            <motion.a
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              key={item.name}
+              href={item.href}
+              className="text-gray-400 hover:text-gray-500"
+            >
+              <span className="sr-only">{item.name}</span>
+              <img
+                src={`/images/social/${item.icon}`}
+                alt={item.name}
+                className="h-6 w-6 filter"
+              />
+            </motion.a>
+          ))}
         </motion.div>
 
         <motion.div

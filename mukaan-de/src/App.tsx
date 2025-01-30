@@ -1,10 +1,12 @@
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { AnimatePresence } from 'framer-motion'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import Category from './components/Category'
 import Header from './components/Header'
 import OfferScreen from './components/OfferScreen'
 import Footer from './components/Footer'
+import LoadingScreen from './components/LoadingScreen'
+import SportPage from './components/sport/SportPage.tsx'
 
 // Title management
 const usePageTitle = (title: string) => {
@@ -60,23 +62,40 @@ const Home = () => {
 }
 
 function App() {
+  const [isLoading, setIsLoading] = useState(true)
+
+  if (isLoading) {
+    return <LoadingScreen onLoadingComplete={() => setIsLoading(false)} />
+  }
+
   return (
     <Router>
-      <div className="flex min-h-screen flex-col">
-        <Header />
-        <main className="flex-grow">
-          <AnimatePresence mode="wait">
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/pc" element={<PCScreen />} />
-              <Route path="/tipps" element={<TipsScreen />} />
-              <Route path="/angebote" element={<OfferScreenWithTitle />} />
-              <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
-          </AnimatePresence>
-        </main>
-        <Footer />
-      </div>
+      <Routes>
+        {/* Sport News Route - No Header/Footer */}
+        <Route path="/sport/*" element={<SportPage />} />
+
+        {/* Main App Routes - With Header/Footer */}
+        <Route
+          path="*"
+          element={
+            <div className="flex min-h-screen flex-col">
+              <Header />
+              <main className="flex-grow">
+                <AnimatePresence mode="wait">
+                  <Routes>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/pc" element={<PCScreen />} />
+                    <Route path="/tipps" element={<TipsScreen />} />
+                    <Route path="/angebote" element={<OfferScreenWithTitle />} />
+                    <Route path="*" element={<Navigate to="/" replace />} />
+                  </Routes>
+                </AnimatePresence>
+              </main>
+              <Footer />
+            </div>
+          }
+        />
+      </Routes>
     </Router>
   )
 }

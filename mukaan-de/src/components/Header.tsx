@@ -66,8 +66,8 @@ export default function Header() {
               <Link
                 to={item.href}
                 className={`flex items-center gap-2 text-sm font-semibold ${location.pathname === item.href
-                    ? 'text-indigo-600'
-                    : 'text-gray-900 hover:text-indigo-600'
+                  ? 'text-indigo-600'
+                  : 'text-gray-900 hover:text-indigo-600'
                   }`}
               >
                 <item.icon className="h-5 w-5" />
@@ -106,8 +106,8 @@ export default function Header() {
                     key={item.name}
                     to={item.href}
                     className={`-mx-3 flex items-center gap-2 rounded-lg px-3 py-2 text-base font-semibold leading-7 ${location.pathname === item.href
-                        ? 'text-indigo-600 bg-indigo-50'
-                        : 'text-gray-900 hover:bg-gray-50'
+                      ? 'text-indigo-600 bg-indigo-50'
+                      : 'text-gray-900 hover:bg-gray-50'
                       }`}
                     onClick={() => setMobileMenuOpen(false)}
                   >
