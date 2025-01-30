@@ -39,7 +39,7 @@ const callouts = [
   {
     name: 'Spiele immer günstiger bekommen',
     description: 'keyforsteam.de',
-    imageSrc: '/images/steam.png',
+    imageSrc: '/images/kaysteam.jpeg',
     imageAlt: 'KeyForSteam Screenshot - Spiele günstiger kaufen',
     href: '/keyforsteam',
   },
@@ -76,7 +76,7 @@ const itemVariants = {
 
 export default function Category() {
   return (
-    <div className="bg-gray-100">
+    <div className="">
       <HeroSection />
 
       {/* Categories Section */}
@@ -90,7 +90,7 @@ export default function Category() {
                 <img
                   alt={callout.imageAlt}
                   src={callout.imageSrc}
-                  className="w-full rounded-lg bg-white object-cover group-hover:opacity-75 max-sm:h-80 sm:aspect-2/1 lg:aspect-square"
+                  className="w-full rounded-lg  object-cover group-hover:opacity-75 max-sm:h-80 sm:aspect-2/1 lg:aspect-square"
                 />
                 <h3 className="mt-6 text-sm text-gray-500">
                   <a href={callout.href}>
@@ -105,7 +105,7 @@ export default function Category() {
         </div>
       </div>
       {/* Social Media Section */}
-      <div className="bg-white py-12 sm:py-16">
+      <div className=" py-12 sm:py-16">
         <motion.div
           variants={containerVariants}
           initial="hidden"
@@ -137,7 +137,7 @@ export default function Category() {
                 variants={itemVariants}
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
-                className="group relative rounded-2xl bg-white p-6 shadow-lg ring-1 ring-gray-900/5 transition-all duration-200 hover:shadow-xl"
+                className="group relative rounded-2xl  p-6 shadow-lg ring-1 ring-gray-900/5 transition-all duration-200 hover:shadow-xl"
               >
                 <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-indigo-500 group-hover:bg-indigo-600">
                   <item.icon className="h-8 w-8 text-white" aria-hidden="true" />

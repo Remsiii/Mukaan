@@ -1,6 +1,6 @@
 import { FunctionComponent } from 'react'
 
-interface DetailPageProps {
+export interface DetailPageProps {
   title: string
   subtitle?: string
   imagePath: string

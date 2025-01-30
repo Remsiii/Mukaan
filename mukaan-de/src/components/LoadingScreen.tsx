@@ -37,7 +37,7 @@ export default function LoadingScreen({ onLoadingComplete }: LoadingScreenProps)
           initial={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.8, ease: "easeInOut" }}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-white"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-gray-800"
         >
           <div className="relative">
             <motion.div
