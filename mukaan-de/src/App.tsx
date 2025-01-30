@@ -6,7 +6,8 @@ import Header from './components/Header'
 import OfferScreen from './components/OfferScreen'
 import Footer from './components/Footer'
 import LoadingScreen from './components/LoadingScreen'
-import SportPage from './components/sport/SportPage.tsx'
+import DetailPage from './components/DetailPage'
+import { keyForSteamContent } from './data/pages/keyforsteam'
 
 // Title management
 const usePageTitle = (title: string) => {
@@ -71,8 +72,6 @@ function App() {
   return (
     <Router>
       <Routes>
-        {/* Sport News Route - No Header/Footer */}
-        <Route path="/sport/*" element={<SportPage />} />
 
         {/* Main App Routes - With Header/Footer */}
         <Route
@@ -87,6 +86,10 @@ function App() {
                     <Route path="/pc" element={<PCScreen />} />
                     <Route path="/tipps" element={<TipsScreen />} />
                     <Route path="/angebote" element={<OfferScreenWithTitle />} />
+                    <Route
+                      path="/keyforsteam"
+                      element={<DetailPage {...keyForSteamContent} />}
+                    />
                     <Route path="*" element={<Navigate to="/" replace />} />
                   </Routes>
                 </AnimatePresence>

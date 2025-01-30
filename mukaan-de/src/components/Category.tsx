@@ -37,11 +37,11 @@ const socialLinks = [
 
 const callouts = [
   {
-    name: 'Desk and Office',
-    description: 'Work from home accessories',
-    imageSrc: 'https://tailwindui.com/plus/img/ecommerce-images/home-page-02-edition-01.jpg',
-    imageAlt: 'Desk with leather desk pad, walnut desk organizer, wireless keyboard and mouse, and porcelain mug.',
-    href: '#',
+    name: 'Spiele immer günstiger bekommen',
+    description: 'keyforsteam.de',
+    imageSrc: '/images/steam.png',
+    imageAlt: 'KeyForSteam Screenshot - Spiele günstiger kaufen',
+    href: '/keyforsteam',
   },
   {
     name: 'Self-Improvement',
