@@ -57,3 +57,18 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+
+@keyframes scaleUpDown {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.animate-scaleUpDown {
+  animation: scaleUpDown 3s ease-in-out infinite;
+}
+
