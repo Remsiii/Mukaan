@@ -1,7 +1,6 @@
 import { useParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { callouts } from '../data/callouts'
-import type { Callout } from '../data/callouts'
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 

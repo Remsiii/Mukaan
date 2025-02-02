@@ -25,9 +25,9 @@ export default function HeroSection() {
                     transition={{ duration: 0.8 }}
                     className="hidden sm:mb-8 sm:flex sm:justify-center"
                 >
-                    <div className="relative rounded-full px-3 py-1 text-sm/6 dark:text-gray-600 text-gray-900  ring-1 ring-gray-900/10 hover:ring-gray-900/20">
+                    <div className="relative rounded-full px-3 py-1 text-sm/6 text-gray-400 ring-1 ring-gray-800 hover:ring-gray-700">
                         Neu! PC Beratung verfügbar{' '}
-                        <a href="/pc" className="font-semibold text-indigo-600">
+                        <a href="/pc" className="font-semibold text-indigo-400">
                             <span aria-hidden="true" className="absolute inset-0" />
                             Mehr erfahren <span aria-hidden="true">&rarr;</span>
                         </a>

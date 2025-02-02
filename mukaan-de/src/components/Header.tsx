@@ -14,10 +14,12 @@ import {
   ComputerDesktopIcon,
   LightBulbIcon,
   GiftIcon,
+  DevicePhoneMobileIcon,
 } from '@heroicons/react/24/outline'
 
 const navigation = [
   { name: 'PC', href: '/pc', icon: ComputerDesktopIcon },
+  { name: 'Apps', href: '/apps', icon: DevicePhoneMobileIcon },
   { name: 'Tipps', href: '/tipps', icon: LightBulbIcon },
   { name: 'Angebote', href: '/angebote', icon: GiftIcon },
 ]
