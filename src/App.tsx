@@ -3,7 +3,6 @@ import { AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import Category from "./components/Category";
 import Header from "./components/Header";
-import OfferScreen from "./components/OfferScreen";
 import Footer from "./components/Footer";
 import LoadingScreen from "./components/LoadingScreen";
 import DetailPage from "./pages/[slug]";
@@ -13,11 +12,6 @@ import TikTokScreen from "./components/TikTokScreen"; // TikTok-Page importieren
 import TipsPage from "./pages/TipsPage";
 import AngebotePage from "./pages/AngebotePage";
 
-// Wrap OfferScreen with title management
-const OfferScreenWithTitle = () => {
-  usePageTitle("Angebote");
-  return <OfferScreen />;
-};
 
 // Wrap Category with title management
 const Home = () => {
