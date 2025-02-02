@@ -25,7 +25,7 @@ export default function HeroSection() {
                     transition={{ duration: 0.8 }}
                     className="hidden sm:mb-8 sm:flex sm:justify-center"
                 >
-                    <div className="relative rounded-full px-3 py-1 text-sm/6 text-gray-600 ring-1 ring-gray-900/10 hover:ring-gray-900/20">
+                    <div className="relative rounded-full px-3 py-1 text-sm/6 dark:text-gray-600 text-gray-900  ring-1 ring-gray-900/10 hover:ring-gray-900/20">
                         Neu! PC Beratung verfügbar{' '}
                         <a href="/pc" className="font-semibold text-indigo-600">
                             <span aria-hidden="true" className="absolute inset-0" />
@@ -38,7 +38,7 @@ export default function HeroSection() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.8, delay: 0.2 }}
-                        className="text-5xl font-semibold tracking-tight text-balance text-white-900 sm:text-7xl"
+                        className="text-5xl font-semibold tracking-tight text-balance dark:text-white-900 sm:text-7xl"
                     >
                         Technische Beratung & Support
                     </motion.h1>

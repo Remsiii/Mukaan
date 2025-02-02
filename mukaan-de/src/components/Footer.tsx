@@ -93,7 +93,7 @@ export default function Footer() {
                 <HeartIcon className="h-8 w-8 text-red-500" />
                 <div className="text-center">
                   <p className="text-lg font-semibold text-white">
-                    Hilfe mir die 10 Jahren
+                    Spendensupport
                   </p>
                   <p className="text-sm text-gray-300">
                     Unterstütze mich mit einer kleinen Spende

@@ -6,8 +6,7 @@ import Header from "./components/Header";
 import OfferScreen from "./components/OfferScreen";
 import Footer from "./components/Footer";
 import LoadingScreen from "./components/LoadingScreen";
-import DetailPage from "./components/DetailPage";
-import { keyForSteamContent } from "./data/pages/keyforsteam";
+import DetailPage from "./pages/[slug]";
 import { PCScreen, TipsScreen } from "./components/PlaceholderPages";
 import { usePageTitle } from "./hooks/usePageTitle";
 import TikTokScreen from "./components/TikTokScreen"; // TikTok-Page importieren
@@ -47,7 +46,7 @@ function App() {
                     <Route path="/pc" element={<PCScreen />} />
                     <Route path="/tipps" element={<TipsScreen />} />
                     <Route path="/angebote" element={<OfferScreenWithTitle />} />
-                    <Route path="/keyforsteam" element={<DetailPage {...keyForSteamContent} />} />
+                    <Route path="/:slug" element={<DetailPage />} />
                     <Route path="/tiktok" element={<TikTokScreen />} />
                     <Route path="*" element={<Navigate to="/" replace />} />
                   </Routes>

@@ -1,5 +1,7 @@
 import { motion } from 'framer-motion'
+import { Link } from 'react-router-dom'
 import HeroSection from './HeroSection'
+import { callouts } from '../data/callouts'
 
 const socialLinks = [
   {
@@ -35,30 +37,6 @@ const socialLinks = [
   },
 ]
 
-const callouts = [
-  {
-    name: 'Spiele immer günstiger bekommen',
-    description: 'keyforsteam.de',
-    imageSrc: '/images/kaysteam.jpeg',
-    imageAlt: 'KeyForSteam Screenshot - Spiele günstiger kaufen',
-    href: '/keyforsteam',
-  },
-  {
-    name: 'Self-Improvement',
-    description: 'Journals and note-taking',
-    imageSrc: 'https://tailwindui.com/plus/img/ecommerce-images/home-page-02-edition-02.jpg',
-    imageAlt: 'Wood table with porcelain mug, leather journal, brass pen, leather key ring, and a houseplant.',
-    href: '#',
-  },
-  {
-    name: 'Travel',
-    description: 'Daily commute essentials',
-    imageSrc: 'https://tailwindui.com/plus/img/ecommerce-images/home-page-02-edition-03.jpg',
-    imageAlt: 'Collection of four insulated travel bottles on wooden shelf.',
-    href: '#',
-  },
-]
-
 const containerVariants = {
   hidden: { opacity: 0 },
   show: {
@@ -82,28 +60,40 @@ export default function Category() {
       {/* Categories Section */}
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-2xl py-16 sm:py-24 lg:max-w-none lg:py-32">
-          <h2 className="text-2xl font-bold text-gray-900">Collections</h2>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Collections</h2>
 
-          <div className="mt-6 space-y-12 lg:grid lg:grid-cols-3 lg:gap-x-6 lg:space-y-0">
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            animate="show"
+            className="mt-6 space-y-12 lg:grid lg:grid-cols-3 lg:gap-x-6 lg:space-y-0"
+          >
             {callouts.map((callout) => (
-              <div key={callout.name} className="group relative">
-                <img
-                  alt={callout.imageAlt}
-                  src={callout.imageSrc}
-                  className="w-full rounded-lg  object-cover group-hover:opacity-75 max-sm:h-80 sm:aspect-2/1 lg:aspect-square"
-                />
-                <h3 className="mt-6 text-sm text-gray-500">
-                  <a href={callout.href}>
+              <motion.div
+                key={callout.name}
+                className="group relative"
+                variants={itemVariants}
+              >
+                <div className="relative h-80 w-full overflow-hidden rounded-lg bg-white sm:aspect-2/1 lg:aspect-square">
+                  <img
+                    src={callout.imageSrc}
+                    alt={callout.imageAlt}
+                    className="h-full w-full object-cover object-center group-hover:opacity-75"
+                  />
+                </div>
+                <h3 className="mt-6 text-sm text-gray-500 dark:text-white ">
+                  <Link to={`/${callout.slug}`}>
                     <span className="absolute inset-0" />
                     {callout.name}
-                  </a>
+                  </Link>
                 </h3>
-                <p className="text-base font-semibold text-gray-900">{callout.description}</p>
-              </div>
+                <p className="text-base font-semibold text-gray-900 dark:text-white">{callout.description}</p>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
       </div>
+
       {/* Social Media Section */}
       <div className=" py-12 sm:py-16">
         <motion.div
@@ -115,13 +105,13 @@ export default function Category() {
           <div className="mx-auto max-w-2xl text-center">
             <motion.h2
               variants={itemVariants}
-              className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl"
+              className="text-3xl font-bold tracking-tight dark:text-gray-300 sm:text-4xl"
             >
               Folgen Sie uns
             </motion.h2>
             <motion.p
               variants={itemVariants}
-              className="mt-4 text-lg leading-8 text-gray-600"
+              className="mt-4 text-lg leading-8 dark:text-gray-400"
             >
               Bleiben Sie mit uns in Verbindung und erhalten Sie die neuesten Updates
             </motion.p>
@@ -142,7 +132,7 @@ export default function Category() {
                 <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-indigo-500 group-hover:bg-indigo-600">
                   <item.icon className="h-8 w-8 text-white" aria-hidden="true" />
                 </div>
-                <p className="mt-4 text-base font-semibold text-gray-900">{item.name}</p>
+                <p className="mt-4 text-base font-semibold dark:text-gray-400">{item.name}</p>
               </motion.a>
             ))}
           </motion.div>
