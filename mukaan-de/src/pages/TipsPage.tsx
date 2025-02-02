@@ -3,7 +3,6 @@ import { useInView } from 'framer-motion'
 import { useRef } from 'react'
 import { usePageTitle } from '../hooks/usePageTitle'
 import { 
-  LightBulbIcon, 
   ArrowTopRightOnSquareIcon,
   SparklesIcon 
 } from '@heroicons/react/24/outline'
