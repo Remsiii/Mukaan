@@ -1,5 +1,6 @@
 import { usePageTitle } from '../hooks/usePageTitle'
 import { motion } from 'framer-motion'
+import { SearchBar } from './SearchBar'
 
 const apps = [
   {
@@ -138,6 +139,16 @@ export function PCScreen() {
             <p className="mt-6 text-lg leading-8 text-gray-400">
               Die besten Deals und Angebote, sorgfältig ausgewählt für dich.
             </p>
+          </motion.div>
+
+          {/* Search Bar */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="mt-8"
+          >
+            <SearchBar collections={pcConfigs} />
           </motion.div>
         </div>
 

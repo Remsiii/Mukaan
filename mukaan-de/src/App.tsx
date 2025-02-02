@@ -10,6 +10,7 @@ import DetailPage from "./pages/[slug]";
 import { PCScreen, TipsScreen, AppsScreen } from "./components/PlaceholderPages";
 import { usePageTitle } from "./hooks/usePageTitle";
 import TikTokScreen from "./components/TikTokScreen"; // TikTok-Page importieren
+import TipsPage from "./pages/TipsPage";
 
 // Wrap OfferScreen with title management
 const OfferScreenWithTitle = () => {
@@ -45,7 +46,7 @@ function App() {
                     <Route path="/" element={<Home />} />
                     <Route path="/pc" element={<PCScreen />} />
                     <Route path="/apps" element={<AppsScreen />} />
-                    <Route path="/tipps" element={<TipsScreen />} />
+                    <Route path="/tipps" element={<TipsPage />} />
                     <Route path="/angebote" element={<OfferScreenWithTitle />} />
                     <Route path="/:slug" element={<DetailPage />} />
                     <Route path="/tiktok" element={<TikTokScreen />} />

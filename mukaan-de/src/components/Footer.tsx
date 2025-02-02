@@ -66,6 +66,7 @@ export default function Footer() {
       variants={footerVariants}
       initial="hidden"
       animate={isInView ? "visible" : "hidden"}
+      className=""
     >
       <div className="mx-auto max-w-7xl overflow-hidden px-6 py-12 sm:py-16 lg:px-8">
         {/* Donation Section */}
@@ -80,7 +81,7 @@ export default function Footer() {
             className="relative rounded-2xl bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 p-[2px] cursor-pointer transform transition-transform hover:scale-105"
             onClick={() => window.open('http://paypal.me/mukaande', '_blank')}
           >
-            <div className="relative rounded-2xl bg-gray-900 px-8 py-6">
+            <div className="relative rounded-2xl bg-gray-900 px-8 py-6 hover:bg-gray-800/80 transition-colors">
               <div className="flex items-center gap-4">
                 <motion.div
                   variants={sparkleVariants}
@@ -116,11 +117,11 @@ export default function Footer() {
           variants={itemVariants}
           className="mt-10 flex justify-center space-x-10"
         >
-          <a href="#" className="text-gray-400 hover:text-gray-300">
+          <a href="#" className="text-gray-400 hover:text-gray-200 transition-colors">
             <span className="sr-only">Impressum</span>
             Impressum
           </a>
-          <a href="#" className="text-gray-400 hover:text-gray-300">
+          <a href="#" className="text-gray-400 hover:text-gray-200 transition-colors">
             <span className="sr-only">Datenschutz</span>
             Datenschutz
           </a>
@@ -139,13 +140,13 @@ export default function Footer() {
               whileTap={{ scale: 0.9 }}
               key={item.name}
               href={item.href}
-              className="text-gray-400 hover:text-gray-500"
+              className="text-gray-400 hover:text-gray-200 transition-colors"
             >
               <span className="sr-only">{item.name}</span>
               <img
                 src={`/images/social/${item.icon}`}
                 alt={item.name}
-                className="h-6 w-6 filter"
+                className="h-6 w-6 brightness-0 invert opacity-75 hover:opacity-100 transition-all"
               />
             </motion.a>
           ))}

@@ -2,6 +2,7 @@ import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import HeroSection from './HeroSection'
 import { callouts } from '../data/callouts'
+import { SearchBar } from './SearchBar'
 
 const socialLinks = [
   {
@@ -52,10 +53,36 @@ const itemVariants = {
   show: { opacity: 1, y: 0 },
 }
 
+// Suchkollektionen aus den callouts erstellen
+const searchCollections = callouts.map(callout => ({
+  title: callout.name,
+  description: callout.description,
+  image: callout.imageSrc,
+  badge: callout.pageContent.title,
+  link: `/${callout.slug}`
+}))
+
 export default function Category() {
   return (
     <div className="">
       <HeroSection />
+
+      {/* Zentrale Suchsektion */}
+      <div className="relative z-10 -mt-32 mb-16"> {/* Höher positioniert */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="mx-auto max-w-2xl px-4"
+        >
+          <div className="backdrop-blur-xl bg-white/10 p-4 rounded-2xl shadow-2xl">
+            <h2 className="text-xl font-semibold text-white text-center mb-4">
+              Durchsuche alle Angebote und Tipps
+            </h2>
+            <SearchBar collections={searchCollections} />
+          </div>
+        </motion.div>
+      </div>
 
       {/* Categories Section */}
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -94,50 +121,6 @@ export default function Category() {
         </div>
       </div>
 
-      {/* Social Media Section */}
-      <div className=" py-12 sm:py-16">
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          animate="show"
-          className="mx-auto max-w-7xl px-6 lg:px-8"
-        >
-          <div className="mx-auto max-w-2xl text-center">
-            <motion.h2
-              variants={itemVariants}
-              className="text-3xl font-bold tracking-tight dark:text-gray-300 sm:text-4xl"
-            >
-              Folgen Sie uns
-            </motion.h2>
-            <motion.p
-              variants={itemVariants}
-              className="mt-4 text-lg leading-8 dark:text-gray-400"
-            >
-              Bleiben Sie mit uns in Verbindung und erhalten Sie die neuesten Updates
-            </motion.p>
-          </div>
-          <motion.div
-            variants={containerVariants}
-            className="mt-10 flex justify-center space-x-8 md:space-x-12"
-          >
-            {socialLinks.map((item) => (
-              <motion.a
-                key={item.name}
-                href={item.href}
-                variants={itemVariants}
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-                className="group relative rounded-2xl  p-6 shadow-lg ring-1 ring-gray-900/5 transition-all duration-200 hover:shadow-xl"
-              >
-                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-indigo-500 group-hover:bg-indigo-600">
-                  <item.icon className="h-8 w-8 text-white" aria-hidden="true" />
-                </div>
-                <p className="mt-4 text-base font-semibold dark:text-gray-400">{item.name}</p>
-              </motion.a>
-            ))}
-          </motion.div>
-        </motion.div>
-      </div>
     </div>
   )
 }

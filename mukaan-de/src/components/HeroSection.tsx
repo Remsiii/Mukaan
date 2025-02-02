@@ -3,7 +3,6 @@
 import { motion } from 'framer-motion'
 
 export default function HeroSection() {
-
     return (
         <div className="relative isolate px-6 pt-14 lg:px-8">
             <div
@@ -38,7 +37,7 @@ export default function HeroSection() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.8, delay: 0.2 }}
-                        className="text-5xl font-semibold tracking-tight text-balance dark:text-white-900 sm:text-7xl"
+                        className="text-5xl font-semibold tracking-tight text-balance text-white sm:text-7xl"
                     >
                         Technische Beratung & Support
                     </motion.h1>
@@ -46,16 +45,17 @@ export default function HeroSection() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.8, delay: 0.4 }}
-                        className="mt-8 text-lg font-medium text-pretty text-gray-500 sm:text-xl/8"
+                        className="mt-8 text-lg font-medium text-pretty text-gray-400 sm:text-xl/8"
                     >
                         Professionelle Unterstützung bei allen technischen Fragen.
                         Von PC-Beratung bis hin zu praktischen Tipps und Tricks -
                         ich helfe dir, die richtige Lösung zu finden.
                     </motion.p>
+
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.8, delay: 0.6 }}
+                        transition={{ duration: 0.8, delay: 0.8 }}
                         className="mt-10 flex items-center justify-center gap-x-6"
                     >
                         <a
@@ -64,7 +64,7 @@ export default function HeroSection() {
                         >
                             PC Beratung
                         </a>
-                        <a href="/tipps" className="text-sm/6 font-semibold text-gray-900">
+                        <a href="/tipps" className="text-sm/6 font-semibold text-gray-400 hover:text-gray-300">
                             Tipps & Tricks <span aria-hidden="true">→</span>
                         </a>
                     </motion.div>
