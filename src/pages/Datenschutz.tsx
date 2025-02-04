@@ -1,11 +1,21 @@
 import { motion } from 'framer-motion'
+import { datenschutzData } from '../data/legal/datenschutzData'
 
 const pageVariants = {
   initial: { opacity: 0, y: 20 },
   animate: { 
     opacity: 1, 
     y: 0,
-    transition: { duration: 0.6, ease: "easeOut" }
+    transition: { duration: 0.8, ease: [0.4, 0, 0.2, 1] }
+  }
+}
+
+const sectionVariants = {
+  initial: { opacity: 0, y: 30 },
+  animate: { 
+    opacity: 1, 
+    y: 0,
+    transition: { duration: 0.5, ease: "easeOut" }
   }
 }
 
@@ -15,56 +25,63 @@ export default function Datenschutz() {
       variants={pageVariants}
       initial="initial"
       animate="animate"
-      className="min-h-screen bg-gray-900 py-16 px-4 sm:px-6 lg:px-8"
+      className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 py-16 px-4 sm:px-6 lg:px-8"
     >
-      <div className="max-w-3xl mx-auto">
-        <h1 className="text-3xl font-bold text-white mb-8">Datenschutzerklärung</h1>
+      <div className="max-w-4xl mx-auto">
+        <div className="text-center mb-12">
+          <h1 className="text-4xl font-bold text-white mb-4 relative inline-block">
+            Datenschutzerklärung
+            <div className="absolute bottom-0 left-0 w-full h-0.5 bg-blue-500/60 transform scale-x-0 transition-transform duration-300 group-hover:scale-x-100"></div>
+          </h1>
+          <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+            Informationen zur Verarbeitung Ihrer personenbezogenen Daten und Ihrer Rechte gemäß der DSGVO
+          </p>
+        </div>
         
-        <div className="bg-gray-800 rounded-lg p-8 space-y-8 text-gray-300">
-          <section>
-            <h2 className="text-xl font-semibold text-white mb-4">
-              Grundlegendes
-            </h2>
-            <p className="leading-relaxed">
-              Wir nehmen den Schutz Ihrer persönlichen Daten sehr ernst. Ihre Daten werden vertraulich 
-              und entsprechend der gesetzlichen Datenschutzvorschriften sowie dieser Datenschutzerklärung behandelt.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-xl font-semibold text-white mb-4">
-              Erhebung und Speicherung personenbezogener Daten
-            </h2>
-            <p className="leading-relaxed">
-              Wir erheben personenbezogene Daten nur, wenn Sie uns diese im Rahmen einer Anfrage 
-              oder Registrierung freiwillig mitteilen. Die Verarbeitung erfolgt auf Grundlage von 
-              Art. 6 (1) lit. a DSGVO.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-xl font-semibold text-white mb-4">
-              Nutzung und Weitergabe personenbezogener Daten
-            </h2>
-            <p className="leading-relaxed">
-              Ihre Daten werden ausschließlich zur Bearbeitung Ihrer Anfragen und zur Abwicklung 
-              von Verträgen genutzt. Eine Weitergabe an Dritte erfolgt nicht ohne Ihre ausdrückliche Einwilligung.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-xl font-semibold text-white mb-4">
-              Ihre Rechte
-            </h2>
-            <ul className="list-disc list-inside space-y-2">
-              <li>Recht auf Auskunft</li>
-              <li>Recht auf Berichtigung</li>
-              <li>Recht auf Löschung</li>
-              <li>Recht auf Einschränkung der Verarbeitung</li>
-              <li>Recht auf Datenübertragbarkeit</li>
-              <li>Widerspruchsrecht</li>
-            </ul>
-          </section>
+        <div className="grid gap-8 bg-gray-800/50 backdrop-blur-sm rounded-xl p-8 shadow-xl border border-gray-700/50">
+          {datenschutzData.sections.map((section, index) => (
+            <motion.section 
+              key={index}
+              variants={sectionVariants}
+              initial="initial"
+              whileInView="animate"
+              viewport={{ once: true }}
+              className="hover:bg-gray-800/30 transition-colors duration-300 rounded-lg p-6"
+            >
+              <h2 className="text-2xl font-semibold text-white mb-4 flex items-center">
+                <span className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center mr-3">
+                  <svg className="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                  </svg>
+                </span>
+                {section.title}
+              </h2>
+              <div className="space-y-4 pl-11">
+                {section.content.map((paragraph, pIndex) => (
+                  <p key={pIndex} className="text-gray-300 leading-relaxed">
+                    {paragraph}
+                  </p>
+                ))}
+                {section.subsections?.map((subsection, sIndex) => (
+                  <div key={sIndex} className="mt-6 bg-gray-800/30 rounded-lg p-4">
+                    <h3 className="text-lg font-semibold text-white mb-3 flex items-center">
+                      <span className="w-6 h-6 rounded-md bg-blue-500/10 flex items-center justify-center mr-2">
+                        <svg className="w-3 h-3 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                      </span>
+                      {subsection.title}
+                    </h3>
+                    {subsection.content.map((paragraph, ssIndex) => (
+                      <p key={ssIndex} className="text-gray-300 leading-relaxed ml-8">
+                        {paragraph}
+                      </p>
+                    ))}
+                  </div>
+                ))}
+              </div>
+            </motion.section>
+          ))}
         </div>
       </div>
     </motion.div>
