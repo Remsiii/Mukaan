@@ -144,7 +144,7 @@ export default function Footer() {
             >
               <span className="sr-only">{item.name}</span>
               <img
-                src={`/images/social/${item.icon}`}
+                src={`Mukaan/social/${item.icon}`}
                 alt={item.name}
                 className="h-6 w-6 brightness-0 invert opacity-75 hover:opacity-100 transition-all"
               />

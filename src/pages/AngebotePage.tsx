@@ -15,7 +15,7 @@ const angebote = [
     price: "49,99 €",
     originalPrice: "79,99 €",
     savings: "38%",
-    image: "/images/offers/pc-beratung.jpg",
+    image: "Mukaan/images/offers/pc-beratung.jpg",
     features: [
       "Persönliche 1:1 Beratung",
       "Maßgeschneiderte Konfiguration",
@@ -31,7 +31,7 @@ const angebote = [
     price: "29,99 €",
     originalPrice: "49,99 €",
     savings: "40%",
-    image: "/images/offers/app-optimierung.jpg",
+    image: "Mukaan/images/offers/app-optimierung.jpg",
     features: [
       "Performance-Analyse",
       "Workflow-Optimierung",

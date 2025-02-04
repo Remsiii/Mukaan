@@ -37,7 +37,7 @@ export default function Header() {
             <span className="sr-only">Mukaan</span>
             <motion.img
               alt=""
-              src="/images/mukaan.png"
+              src="Mukaan/images/mukaan.png"
               className="h-20 w-auto animate-scaleUpDown"
               initial={{ scale: 0.8 }}
               animate={{ scale: 1 }}
@@ -108,7 +108,7 @@ export default function Header() {
               <span className="sr-only">Mukaan</span>
               <img
                 className="h-8 w-auto"
-                src="/images/mukaan.png"
+                src="Mukaan/images/mukaan.png"
                 alt=""
               />
             </Link>

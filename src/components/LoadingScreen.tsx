@@ -50,7 +50,7 @@ export default function LoadingScreen({ onLoadingComplete }: LoadingScreenProps)
               className="relative z-10"
             >
               <img
-                src="/images/mukaan.png"
+                src="images/mukaan.png"
                 alt="Mukaan Logo"
                 className="h-24 w-24 object-contain"
               />
