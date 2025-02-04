@@ -11,6 +11,8 @@ import { usePageTitle } from "./hooks/usePageTitle";
 import TikTokScreen from "./components/TikTokScreen"; // TikTok-Page importieren
 import TipsPage from "./pages/TipsPage";
 import AngebotePage from "./pages/AngebotePage";
+import Impressum from './pages/Impressum.tsx'
+import Datenschutz from './pages/Datenschutz'
 
 
 // Wrap Category with title management
@@ -27,7 +29,7 @@ function App() {
   }
 
   return (
-    <Router>
+    <Router basename="/Mukaan">
       <Routes>
         {/* Main App Routes - With Header/Footer */}
         <Route
@@ -45,6 +47,8 @@ function App() {
                     <Route path="/angebote" element={<AngebotePage />} />
                     <Route path="/:slug" element={<DetailPage />} />
                     <Route path="/tiktok" element={<TikTokScreen />} />
+                    <Route path="/impressum" element={<Impressum />} />
+                    <Route path="/datenschutz" element={<Datenschutz />} />
                     <Route path="*" element={<Navigate to="/" replace />} />
                   </Routes>
                 </AnimatePresence>

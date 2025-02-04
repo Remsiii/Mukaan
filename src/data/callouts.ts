@@ -33,13 +33,13 @@ export const callouts: Callout[] = [
   {
     name: 'Spiele immer günstiger bekommen',
     description: 'keyforsteam.de',
-    imageSrc: 'Mukaan/images/kaysteam.jpeg',
+    imageSrc: '/Mukaan/images/kaysteam.jpeg',
     imageAlt: 'KeyForSteam Screenshot - Spiele günstiger kaufen',
     slug: 'keyforsteam',
     pageContent: {
       title: 'Spiele immer günstiger bekommen',
       subtitle: 'keyforsteam.de',
-      imagePath: 'Mukaan/images/steam.png',
+      imagePath: '/Mukaan/images/steam.png',
       imageAlt: 'KeyForSteam Screenshot',
       content: [
         {
@@ -60,13 +60,13 @@ export const callouts: Callout[] = [
   {
     name: 'Produktivität steigern',
     description: 'Tipps und Tools für mehr Produktivität',
-    imageSrc: 'Mukaan/images/gameboy.jpg',
+    imageSrc: '/Mukaan/images/gameboy.jpg',
     imageAlt: 'Produktivitäts-Tools und Notizen auf einem Schreibtisch',
     slug: 'produktivitaet',
     pageContent: {
       title: 'Produktivität steigern',
       subtitle: 'Wie du effektiver arbeitest und mehr erreichst',
-      imagePath: 'Mukaan/images/gameboy.jpg',
+      imagePath: '/Mukaan/images/gameboy.jpg',
       imageAlt: 'Produktivitäts-Tools und Notizen auf einem Schreibtisch',
       content: [
         {

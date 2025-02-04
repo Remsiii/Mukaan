@@ -6,7 +6,7 @@ const apps = [
   {
     title: "Screenshots von einer ganzen Seite in JEDER App",
     date: "Mai 28, 2024",
-    image: "Mukaan/images/screenshot-app.jpg",
+    image: "/Mukaan/images/screenshot-app.jpg",
     description: "Lerne, wie du in jeder App komplette Screenshots einer ganzen Seite erstellen kannst.",
     category: "Produktivität",
     badge: "Neu",
@@ -15,7 +15,7 @@ const apps = [
   {
     title: "Jede App mit Face ID/Code Sperren",
     date: "December 4, 2023",
-    image: "Mukaan/images/lock-app.jpg",
+    image: "/Mukaan/images/lock-app.jpg",
     description: "Sichere deine Apps mit Face ID oder Code-Sperre - für maximale Privatsphäre.",
     category: "Sicherheit",
     badge: "Beliebt",
@@ -24,7 +24,7 @@ const apps = [
   {
     title: "DB Bahnhof live",
     date: "November 13, 2023",
-    image: "Mukaan/images/db-app.jpg",
+    image: "/Mukaan/images/db-app.jpg",
     description: "Die praktische App für Bahnreisende, die keiner kennt.",
     category: "Reisen",
     badge: "Geheimtipp",
@@ -33,7 +33,7 @@ const apps = [
   {
     title: "Chat-GPT auf dem iPhone",
     date: "Juni 1, 2023",
-    image: "Mukaan/images/chatgpt-app.jpg",
+    image: "/Mukaan/images/chatgpt-app.jpg",
     description: "So nutzt du ChatGPT optimal auf deinem iPhone.",
     category: "KI",
     badge: "Must-Have",
@@ -42,7 +42,7 @@ const apps = [
   {
     title: "RODE Capture!",
     date: "April 4, 2023",
-    image: "Mukaan/images/rode-app.jpg",
+    image: "/Mukaan/images/rode-app.jpg",
     description: "Die professionelle Kamera App von Audio Firma RODE.",
     category: "Multimedia",
     badge: "Pro",
@@ -51,7 +51,7 @@ const apps = [
   {
     title: "Apps, die jeder lieben wird",
     date: "März 8, 2023",
-    image: "Mukaan/images/apps-collection.jpg",
+    image: "/Mukaan/images/apps-collection.jpg",
     description: "Eine kuratierte Sammlung der besten Apps für jeden Zweck.",
     category: "Sammlung",
     badge: "Top",
@@ -63,7 +63,7 @@ const pcConfigs = [
   {
     title: "Perfekte Prepaid SIM Karte für Ausländer",
     price: "9.99€",
-    image: "Mukaan/images/sim-card.jpg",
+    image: "/Mukaan/images/sim-card.jpg",
     specs: [
       "5GB Datenvolumen im Ausland",
       "Ohne Vertrag",
@@ -78,7 +78,7 @@ const pcConfigs = [
   {
     title: "iPhone 16 Bestpreis 🔥",
     price: "759€",
-    image: "Mukaan/images/iphone16.jpg",
+    image: "/Mukaan/images/iphone16.jpg",
     specs: [
       "iPhone 16 schwarz 128 GB",
       "Beim noch relativ unbekannten Anbieter",
@@ -93,7 +93,7 @@ const pcConfigs = [
   {
     title: "Spiele immer günstiger bekommen",
     price: "Variabel",
-    image: "Mukaan/images/keyforsteam.jpg",
+    image: "/Mukaan/images/keyforsteam.jpg",
     specs: [
       "Legale Game Keys",
       "Große Auswahl",

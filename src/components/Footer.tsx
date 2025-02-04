@@ -117,11 +117,11 @@ export default function Footer() {
           variants={itemVariants}
           className="mt-10 flex justify-center space-x-10"
         >
-          <a href="#" className="text-gray-400 hover:text-gray-200 transition-colors">
+          <a href="/Mukaan/impressum" className="text-gray-400 hover:text-gray-200 transition-colors">
             <span className="sr-only">Impressum</span>
             Impressum
           </a>
-          <a href="#" className="text-gray-400 hover:text-gray-200 transition-colors">
+          <a href="/Mukaan/datenschutz" className="text-gray-400 hover:text-gray-200 transition-colors">
             <span className="sr-only">Datenschutz</span>
             Datenschutz
           </a>

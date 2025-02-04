@@ -12,14 +12,14 @@ const tips = [
     title: "Produktivität steigern",
     description: "Wie du mit den richtigen Tools und Methoden mehr aus deinem Tag herausholst.",
     category: "Produktivität",
-    image: "Mukaan/images/productivity.jpg",
+    image: "/Mukaan/images/productivity.jpg",
     link: "/tipps/produktivitaet"
   },
   {
     title: "Apps clever nutzen",
     description: "Die besten Tricks für deine täglichen Apps, die kaum jemand kennt.",
     category: "Apps",
-    image: "Mukaan/images/apps.jpg",
+    image: "/Mukaan/images/apps.jpg",
     link: "/tipps/apps"
   },
   // ... weitere Tips
