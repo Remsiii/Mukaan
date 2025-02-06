@@ -1,21 +1,80 @@
 import { useParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { callouts } from '../data/callouts'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { supabase } from '../lib/supabase'
+
+type Callout = {
+  id: string
+  name: string
+  description: string
+  slug: string
+  image_src: string
+  image_alt: string
+  page_content: {
+    title: string
+    subtitle: string
+    imagePath: string
+    imageAlt: string
+    content: Array<{
+      type: string
+      text: string
+      items?: string[]
+    }>
+    button?: {
+      text: string
+      link: string
+    }
+  } | null
+}
 
 export default function DetailPage() {
   const { slug } = useParams<{ slug: string }>()
   const navigate = useNavigate()
-  const callout = callouts.find((c) => c.slug === slug)
+  const [callout, setCallout] = useState<Callout | null>(null)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    if (!callout) {
-      navigate('/')
-    }
-  }, [callout, navigate])
+    const fetchCallout = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('callouts')
+          .select('*')
+          .eq('slug', slug)
+          .single()
 
-  if (!callout) {
+        if (error) {
+          console.error('Error fetching callout:', error)
+          navigate('/')
+          return
+        }
+
+        if (!data) {
+          navigate('/')
+          return
+        }
+
+        setCallout(data)
+      } catch (error) {
+        console.error('Error:', error)
+        navigate('/')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchCallout()
+  }, [slug, navigate])
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gray-900"></div>
+      </div>
+    )
+  }
+
+  if (!callout || !callout.page_content) {
     return null
   }
 
@@ -30,7 +89,7 @@ export default function DetailPage() {
   }
 
   return (
-    <div className="bg-white">
+    <div className="bg-white dark:bg-gray-900">
       <motion.div
         className="relative overflow-hidden py-16"
         variants={containerVariants}
@@ -40,88 +99,76 @@ export default function DetailPage() {
         {/* Hero section */}
         <div className="relative px-6 lg:px-8">
           <div className="mx-auto max-w-2xl text-center">
-            <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">
-              {callout.pageContent.title}
+            <h1 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-6xl">
+              {callout.page_content.title || callout.name}
             </h1>
-            <p className="mt-6 text-lg leading-8 text-gray-600">
-              {callout.pageContent.subtitle}
+            <p className="mt-6 text-lg leading-8 text-gray-600 dark:text-gray-300">
+              {callout.page_content.subtitle || callout.description}
             </p>
-          </div>
-        </div>
-
-        {/* Main image */}
-        <div className="mt-16 sm:mt-24">
-          <div className="mx-auto max-w-7xl px-6 lg:px-8">
-            <div className="relative overflow-hidden rounded-xl bg-gray-900 px-6 py-20 shadow-2xl sm:rounded-3xl sm:px-16 md:pt-24 lg:flex lg:gap-x-20 lg:px-24 lg:pt-0">
-              <div className="mx-auto max-w-2xl lg:mx-0 lg:flex-auto">
-                <img
-                  className="mt-10 w-full max-w-lg rounded-2xl object-cover sm:mt-16 lg:mt-0 lg:max-w-none"
-                  src={callout.pageContent.imagePath}
-                  alt={callout.pageContent.imageAlt}
-                />
-              </div>
-            </div>
           </div>
         </div>
 
         {/* Content section */}
         <motion.div
-          className="mx-auto mt-16 max-w-7xl px-6 sm:mt-24 lg:px-8"
+          className="relative px-6 lg:px-8 mt-12"
           variants={contentVariants}
         >
-          <div className="mx-auto max-w-2xl lg:mx-0">
-            {callout.pageContent.content.map((block, index) => {
-              switch (block.type) {
-                case 'heading':
-                  return (
-                    <h2 key={index} className="text-2xl font-bold tracking-tight text-gray-900">
-                      {block.text}
-                    </h2>
-                  )
-                case 'paragraph':
-                  return (
-                    <p key={index} className="mt-6 text-lg leading-8 text-gray-600">
-                      {block.text}
-                    </p>
-                  )
-                case 'list':
-                  return (
-                    <div key={index} className="mt-6">
-                      <h3 className="text-lg font-semibold text-gray-900">{block.text}</h3>
-                      <ul className="mt-4 list-disc pl-6 text-base text-gray-600">
+          <div className="mx-auto max-w-3xl">
+            {/* Main Image */}
+            {callout.page_content.imagePath && (
+              <div className="mb-12">
+                <img
+                  src={callout.page_content.imagePath}
+                  alt={callout.page_content.imageAlt || ''}
+                  className="w-full rounded-lg shadow-lg"
+                />
+              </div>
+            )}
+
+            {/* Content Blocks */}
+            <div className="prose prose-lg prose-indigo mx-auto dark:prose-invert">
+              {callout.page_content.content.map((block, index) => {
+                switch (block.type) {
+                  case 'paragraph':
+                    return (
+                      <p key={index} className="text-gray-600 dark:text-gray-300">
+                        {block.text}
+                      </p>
+                    )
+                  case 'heading':
+                    return (
+                      <h2 key={index} className="text-2xl font-bold text-gray-900 dark:text-white mt-8 mb-4">
+                        {block.text}
+                      </h2>
+                    )
+                  case 'list':
+                    return (
+                      <ul key={index} className="list-disc list-inside space-y-2 text-gray-600 dark:text-gray-300">
                         {block.items?.map((item, itemIndex) => (
-                          <li key={itemIndex} className="mt-2">{item}</li>
+                          <li key={itemIndex}>{item}</li>
                         ))}
                       </ul>
-                    </div>
-                  )
-                case 'image':
-                  return (
-                    <div key={index} className="mt-6">
-                      <img
-                        src={block.imagePath}
-                        alt={block.imageAlt}
-                        className="rounded-lg shadow-lg"
-                      />
-                    </div>
-                  )
-                default:
-                  return null
-              }
-            })}
-          </div>
-
-          {/* CTA Button */}
-          {callout.pageContent.button && (
-            <div className="mt-10 flex items-center justify-center gap-x-6">
-              <a
-                href={callout.pageContent.button.link}
-                className="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-              >
-                {callout.pageContent.button.text}
-              </a>
+                    )
+                  default:
+                    return null
+                }
+              })}
             </div>
-          )}
+
+            {/* Call to Action Button */}
+            {callout.page_content.button && (
+              <div className="mt-12 text-center">
+                <a
+                  href={callout.page_content.button.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-block px-8 py-3 text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-md shadow-sm transition-colors duration-200"
+                >
+                  {callout.page_content.button.text}
+                </a>
+              </div>
+            )}
+          </div>
         </motion.div>
       </motion.div>
     </div>
