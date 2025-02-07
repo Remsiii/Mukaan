@@ -25,7 +25,6 @@ const navigation = [
   { name: 'Apps', href: '/apps', icon: DevicePhoneMobileIcon },
   { name: 'Tipps', href: '/tipps', icon: LightBulbIcon },
   { name: 'Angebote', href: '/angebote', icon: GiftIcon },
-  { name: 'Admin', href: '/admin', icon: FaCog },
 ]
 
 export default function Header() {
@@ -117,28 +116,7 @@ export default function Header() {
             ))}
           </PopoverGroup>
         </div>
-        {/* Admin Icon and Login Section */}
-        <div className="flex items-center gap-4 ml-4">
 
-          {/* Login Section */}
-          <div>
-            {profile ? (
-              <button
-                onClick={handleLogout}
-                className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded hover:bg-red-700 transition-colors"
-              >
-                Ausloggen
-              </button>
-            ) : (
-              <button
-                onClick={() => navigate('/login')}
-                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded hover:bg-blue-700 transition-colors"
-              >
-                Anmelden
-              </button>
-            )}
-          </div>
-        </div>
       </nav>
 
       <Dialog as="div" className="lg:hidden" open={mobileMenuOpen} onClose={setMobileMenuOpen}>
@@ -179,38 +157,6 @@ export default function Header() {
                     {item.name}
                   </Link>
                 ))}
-
-                {/* Auth buttons for mobile menu */}
-                {profile ? (
-                  <>
-                    {profile.role === 'admin' && (
-                      <Link
-                        to="/admin"
-                        className="-mx-3 flex items-center gap-2 rounded-lg px-3 py-2 text-base font-semibold leading-7 text-purple-600 hover:bg-purple-50"
-                        onClick={() => setMobileMenuOpen(false)}
-                      >
-                        Admin
-                      </Link>
-                    )}
-                    <button
-                      onClick={async () => {
-                        await handleLogout()
-                        setMobileMenuOpen(false)
-                      }}
-                      className="-mx-3 flex items-center gap-2 rounded-lg px-3 py-2 text-base font-semibold leading-7 text-red-600 hover:bg-red-50"
-                    >
-                      Ausloggen
-                    </button>
-                  </>
-                ) : (
-                  <Link
-                    to="/login"
-                    className="-mx-3 flex items-center gap-2 rounded-lg px-3 py-2 text-base font-semibold leading-7 text-blue-600 hover:bg-blue-50"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    Einloggen
-                  </Link>
-                )}
 
                 <a
                   href="https://geizhals.de"

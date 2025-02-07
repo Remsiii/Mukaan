@@ -1,80 +1,23 @@
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { supabase } from '../lib/supabase'
-
-type Callout = {
-  id: string
-  name: string
-  description: string
-  slug: string
-  image_src: string
-  image_alt: string
-  page_content: {
-    title: string
-    subtitle: string
-    imagePath: string
-    imageAlt: string
-    content: Array<{
-      type: string
-      text: string
-      items?: string[]
-    }>
-    button?: {
-      text: string
-      link: string
-    }
-  } | null
-}
+import { callouts, Callout } from '../data/callouts'
 
 export default function DetailPage() {
   const { slug } = useParams<{ slug: string }>()
   const navigate = useNavigate()
   const [callout, setCallout] = useState<Callout | null>(null)
-  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const fetchCallout = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('callouts')
-          .select('*')
-          .eq('slug', slug)
-          .single()
-
-        if (error) {
-          console.error('Error fetching callout:', error)
-          navigate('/')
-          return
-        }
-
-        if (!data) {
-          navigate('/')
-          return
-        }
-
-        setCallout(data)
-      } catch (error) {
-        console.error('Error:', error)
-        navigate('/')
-      } finally {
-        setLoading(false)
-      }
+    const foundCallout = callouts.find(c => c.slug === slug)
+    if (!foundCallout) {
+      navigate('/')
+      return
     }
-
-    fetchCallout()
+    setCallout(foundCallout)
   }, [slug, navigate])
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gray-900"></div>
-      </div>
-    )
-  }
-
-  if (!callout || !callout.page_content) {
+  if (!callout) {
     return null
   }
 
@@ -100,10 +43,10 @@ export default function DetailPage() {
         <div className="relative px-6 lg:px-8">
           <div className="mx-auto max-w-2xl text-center">
             <h1 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-6xl">
-              {callout.page_content.title || callout.name}
+              {callout.pageContent.title}
             </h1>
             <p className="mt-6 text-lg leading-8 text-gray-600 dark:text-gray-300">
-              {callout.page_content.subtitle || callout.description}
+              {callout.pageContent.subtitle}
             </p>
           </div>
         </div>
@@ -115,11 +58,11 @@ export default function DetailPage() {
         >
           <div className="mx-auto max-w-3xl">
             {/* Main Image */}
-            {callout.page_content.imagePath && (
+            {callout.pageContent.imagePath && (
               <div className="mb-12">
                 <img
-                  src={callout.page_content.imagePath}
-                  alt={callout.page_content.imageAlt || ''}
+                  src={callout.pageContent.imagePath}
+                  alt={callout.pageContent.imageAlt}
                   className="w-full rounded-lg shadow-lg"
                 />
               </div>
@@ -127,7 +70,7 @@ export default function DetailPage() {
 
             {/* Content Blocks */}
             <div className="prose prose-lg prose-indigo mx-auto dark:prose-invert">
-              {callout.page_content.content.map((block, index) => {
+              {callout.pageContent.content.map((block, index) => {
                 switch (block.type) {
                   case 'paragraph':
                     return (
@@ -156,15 +99,15 @@ export default function DetailPage() {
             </div>
 
             {/* Call to Action Button */}
-            {callout.page_content.button && (
+            {callout.pageContent.button && (
               <div className="mt-12 text-center">
                 <a
-                  href={callout.page_content.button.link}
+                  href={callout.pageContent.button.link}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-block px-8 py-3 text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-md shadow-sm transition-colors duration-200"
                 >
-                  {callout.page_content.button.text}
+                  {callout.pageContent.button.text}
                 </a>
               </div>
             )}
