@@ -3,25 +3,7 @@ import { Link } from 'react-router-dom'
 import { useState } from 'react'
 import HeroSection from './HeroSection'
 import { SearchBar } from './SearchBar'
-import { callouts, Callout } from '../data/callouts'
-
-type Callout = {
-  id: string;
-  name: string;
-  description: string;
-  slug: string;
-  imageSrc: string;
-  imageAlt: string;
-  pageContent: {
-    subtitle: string;
-    imagePath: string;
-    imageAlt: string;
-    content: any[];
-    button: {
-      link: string;
-    };
-  };
-}
+import { callouts } from '../data/callouts'
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -38,19 +20,9 @@ const itemVariants = {
   show: { opacity: 1, y: 0 },
 }
 
-// Skeleton component for loading state
-const CalloutSkeleton = () => (
-  <div className="group relative">
-    <div className="relative h-80 w-full overflow-hidden rounded-lg bg-gray-200 dark:bg-gray-700 sm:aspect-h-1 sm:aspect-w-2 lg:aspect-h-1 lg:aspect-w-1 animate-pulse" />
-    <div className="mt-6 space-y-3">
-      <div className="h-4 w-32 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
-      <div className="h-4 w-48 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
-    </div>
-  </div>
-)
 
 export default function Category() {
-  const [searchCollections] = useState(() => 
+  const [searchCollections] = useState(() =>
     callouts.map(callout => ({
       title: callout.name,
       description: callout.description,
@@ -76,9 +48,9 @@ export default function Category() {
             animate="show"
           >
             {callouts.map((callout) => (
-              <motion.div 
-                key={callout.name} 
-                className="group relative" 
+              <motion.div
+                key={callout.name}
+                className="group relative"
                 variants={itemVariants}
               >
                 <div className="relative h-80 w-full overflow-hidden rounded-lg bg-white sm:aspect-h-1 sm:aspect-w-2 lg:aspect-h-1 lg:aspect-w-1 group-hover:opacity-75 dark:bg-gray-800">

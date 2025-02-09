@@ -1,7 +1,6 @@
 import { useState } from 'react';
-import { Navigate, useNavigate } from 'react-router-dom';
-import { supabase } from '../lib/supabase';
-import { auth } from '../lib/auth';
+import { useNavigate } from 'react-router-dom';
+import { supabase } from '../../lib/supabase';
 import { usePageTitle } from '../hooks/usePageTitle';
 
 const ADMIN_EMAIL = import.meta.env.VITE_ADMIN_EMAIL;
@@ -51,7 +50,7 @@ const LoginPage = () => {
         throw new Error('Nur der Administrator kann sich registrieren.');
       }
 
-      const { data, error } = await supabase.auth.signUp({
+      const { error } = await supabase.auth.signUp({
         email,
         password,
       });

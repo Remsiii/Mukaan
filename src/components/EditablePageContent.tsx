@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { PencilSquareIcon, EyeIcon, CheckIcon } from '@heroicons/react/24/outline';
-import { supabase } from '../lib/supabase';
+import { supabase } from '../../lib/supabase';
 
 type PageContent = {
     id: string;
@@ -25,7 +25,6 @@ type Section = {
 
 export default function EditablePageContent() {
     const { slug } = useParams();
-    const navigate = useNavigate();
     const [content, setContent] = useState<PageContent | null>(null);
     const [editMode, setEditMode] = useState(true);
     const [saving, setSaving] = useState(false);
@@ -78,7 +77,7 @@ export default function EditablePageContent() {
         try {
             const fileExt = file.name.split('.').pop();
             const fileName = `${Date.now()}.${fileExt}`;
-            const { error: uploadError, data } = await supabase.storage
+            const { error: uploadError } = await supabase.storage
                 .from('images')
                 .upload(fileName, file);
 
@@ -188,9 +187,8 @@ export default function EditablePageContent() {
             <div className="fixed top-4 right-4 flex items-center space-x-4 z-50">
                 <button
                     onClick={() => setEditMode(!editMode)}
-                    className={`p-2 rounded-full ${
-                        editMode ? 'bg-indigo-600' : 'bg-gray-600'
-                    } text-white hover:opacity-90 transition-opacity`}
+                    className={`p-2 rounded-full ${editMode ? 'bg-indigo-600' : 'bg-gray-600'
+                        } text-white hover:opacity-90 transition-opacity`}
                     title={editMode ? 'Switch to view mode' : 'Switch to edit mode'}
                 >
                     {editMode ? (
@@ -218,7 +216,7 @@ export default function EditablePageContent() {
             )}
 
             {/* Header Section */}
-            <div 
+            <div
                 className="relative h-96 w-full overflow-hidden cursor-pointer"
                 onClick={() => handleImageClick('header')}
             >
@@ -299,7 +297,7 @@ export default function EditablePageContent() {
                                     )}
                                 </div>
                                 {section.image_url && (
-                                    <div 
+                                    <div
                                         className="relative cursor-pointer"
                                         onClick={() => handleImageClick('section', section.id)}
                                     >

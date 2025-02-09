@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { auth, type Profile, subscribeToAuthChanges } from '../lib/auth';
+import { auth, type Profile, subscribeToAuthChanges } from '../../lib/auth';
 import { FaCog } from 'react-icons/fa';
 
 export const AdminLogin = () => {
@@ -10,7 +10,7 @@ export const AdminLogin = () => {
   useEffect(() => {
     // Check if user is already logged in
     auth.getProfile().then(setProfile);
-    
+
     // Subscribe to auth changes
     const unsubscribe = subscribeToAuthChanges(setProfile);
     return unsubscribe;

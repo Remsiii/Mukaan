@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { PencilSquareIcon, EyeIcon, CheckIcon } from '@heroicons/react/24/outline';
-import { supabase } from '../lib/supabase';
+import { supabase } from '../../lib/supabase';
 
 type Callout = {
     id: string;
@@ -53,7 +53,7 @@ export default function EditableCategory() {
             // Upload image to Supabase Storage
             const fileExt = file.name.split('.').pop();
             const fileName = `${Date.now()}.${fileExt}`;
-            const { error: uploadError, data } = await supabase.storage
+            const { error: uploadError } = await supabase.storage
                 .from('images')
                 .upload(fileName, file);
 
@@ -137,9 +137,8 @@ export default function EditableCategory() {
             <div className="fixed top-4 right-4 flex items-center space-x-4 z-50">
                 <button
                     onClick={() => setEditMode(!editMode)}
-                    className={`p-2 rounded-full ${
-                        editMode ? 'bg-indigo-600' : 'bg-gray-600'
-                    } text-white hover:opacity-90 transition-opacity`}
+                    className={`p-2 rounded-full ${editMode ? 'bg-indigo-600' : 'bg-gray-600'
+                        } text-white hover:opacity-90 transition-opacity`}
                     title={editMode ? 'Switch to view mode' : 'Switch to edit mode'}
                 >
                     {editMode ? (
@@ -191,7 +190,7 @@ export default function EditableCategory() {
                                     show: { opacity: 1, y: 0 }
                                 }}
                             >
-                                <div 
+                                <div
                                     className="relative h-80 w-full overflow-hidden rounded-lg bg-white sm:aspect-h-1 sm:aspect-w-2 lg:aspect-h-1 lg:aspect-w-1 group-hover:opacity-75 dark:bg-gray-800"
                                     onClick={() => handleImageClick(callout.id)}
                                 >

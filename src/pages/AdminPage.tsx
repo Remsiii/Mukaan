@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '../lib/supabase';
+import { supabase } from '../../lib/supabase';
 import { PlusIcon, PencilSquareIcon, XMarkIcon, DocumentTextIcon } from '@heroicons/react/24/outline';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
@@ -45,7 +45,7 @@ const AdminDashboard = () => {
     useEffect(() => {
         const checkAuth = async () => {
             const { data: { user }, error } = await supabase.auth.getUser();
-            
+
             if (error || !user) {
                 console.error('Auth error:', error);
                 navigate('/login');
@@ -104,7 +104,7 @@ const AdminDashboard = () => {
 
     const handleDelete = async (callout: Callout) => {
         if (!confirm('Are you sure you want to delete this callout?')) return;
-        
+
         setIsDeleting(true);
         try {
             const { data: { user }, error: authError } = await supabase.auth.getUser();
@@ -144,8 +144,8 @@ const AdminDashboard = () => {
             <div className="flex items-center justify-center min-h-screen bg-white dark:bg-gray-900">
                 <div className="text-center">
                     <div className="text-red-600 dark:text-red-400 text-xl mb-4">Error: {error}</div>
-                    <button 
-                        onClick={() => window.location.reload()} 
+                    <button
+                        onClick={() => window.location.reload()}
                         className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700"
                     >
                         Retry

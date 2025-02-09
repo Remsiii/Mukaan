@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeftIcon } from '@heroicons/react/24/outline';
-import { supabase } from '../lib/supabase';
+import { supabase } from '../../lib/supabase';
 
 type PageContent = {
     id: string;
