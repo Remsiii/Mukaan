@@ -149,23 +149,6 @@ export default function Footer() {
               <span className="sr-only">Datenschutz</span>
               Datenschutz
             </a>
-
-            <button className="text-md group flex items-center justify-center gap-1 rounded-md bg-gray-800 px-6 py-3 text-white hover:cursor-pointer hover:text-yellow-300">
-              <span>Impressum</span>
-              <ArrowTopRightIcon
-                height={20}
-                width={20}
-                className="opacity-75 transition-all group-hover:-translate-y-1 group-hover:translate-x-1 group-hover:scale-110 group-hover:text-yellow-300 group-hover:opacity-100"
-              />
-            </button>
-            <button className="text-md group flex items-center justify-center gap-1 rounded-md bg-gray-800 px-6 py-3 text-white hover:cursor-pointer hover:text-yellow-300">
-              <span>Datenschutz</span>
-              <ArrowTopRightIcon
-                height={20}
-                width={20}
-                className="opacity-75 transition-all group-hover:-translate-y-1 group-hover:translate-x-1 group-hover:scale-110 group-hover:text-yellow-300 group-hover:opacity-100"
-              />
-            </button>
           </motion.div>
         </motion.div>
 

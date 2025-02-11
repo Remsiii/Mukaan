@@ -20,6 +20,9 @@ import EditableCategory from './components/EditableCategory';
 import EditablePageContent from './components/EditablePageContent';
 import { ScrollProgress } from "./registry/magicui/scroll-progress";
 import FixedNavCard from "./components/Fixed-Nav-Card";
+import HeroSection from './components/HeroSection';
+import DealsPage from "./app/deals/page";
+import { FilterProvider } from './context/FilterContext';
 
 // Wrap Category with title management
 const Home = () => {
@@ -35,36 +38,39 @@ function App() {
   }
 
   return (
-    <Router basename="/Mukaan">
-      <div className="flex min-h-screen flex-col">
-        <Header />
-        <FixedNavCard />
-        {/* Spacer in Höhe des Headers; passe den Wert an die tatsächliche Höhe an */}
-        <div className="h-20" />
-        <main className="flex-grow">
-          <AnimatePresence mode="wait">
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/pc" element={<PCScreen />} />
-              <Route path="/apps" element={<AppsScreen />} />
-              <Route path="/tipps" element={<TipsPage />} />
-              <Route path="/admin" element={<AdminPage />} />
-              <Route path="/admin/edit/:id" element={<EditCalloutPage />} />
-              <Route path="/admin/edit-category" element={<EditableCategory />} />
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/angebote" element={<AngebotePage />} />
-              <Route path="/:slug" element={<DetailPage />} />
-              <Route path="/:slug/edit" element={<EditablePageContent />} />
-              <Route path="/tiktok" element={<TikTokScreen />} />
-              <Route path="/impressum" element={<Impressum />} />
-              <Route path="/datenschutz" element={<Datenschutz />} />
-              <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
-          </AnimatePresence>
-        </main>
-        <Footer />
-      </div>
-    </Router>
+    <FilterProvider>
+      <Router basename="/Mukaan">
+        <div className="flex min-h-screen flex-col">
+          <Header />
+          <FixedNavCard />
+          {/* Spacer in Höhe des Headers; passe den Wert an die tatsächliche Höhe an */}
+          <div className="h-20" />
+          <main className="flex-grow">
+            <AnimatePresence mode="wait">
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/deals" element={<DealsPage />} />
+                <Route path="/pc" element={<PCScreen />} />
+                <Route path="/apps" element={<AppsScreen />} />
+                <Route path="/tipps" element={<TipsPage />} />
+                <Route path="/admin" element={<AdminPage />} />
+                <Route path="/admin/edit/:id" element={<EditCalloutPage />} />
+                <Route path="/admin/edit-category" element={<EditableCategory />} />
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/angebote" element={<AngebotePage />} />
+                <Route path="/:slug" element={<DetailPage />} />
+                <Route path="/:slug/edit" element={<EditablePageContent />} />
+                <Route path="/tiktok" element={<TikTokScreen />} />
+                <Route path="/impressum" element={<Impressum />} />
+                <Route path="/datenschutz" element={<Datenschutz />} />
+                <Route path="*" element={<Navigate to="/" replace />} />
+              </Routes>
+            </AnimatePresence>
+          </main>
+          <Footer />
+        </div>
+      </Router>
+    </FilterProvider>
   );
 }
 

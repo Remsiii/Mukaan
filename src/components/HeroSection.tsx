@@ -1,10 +1,11 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import { AuroraText } from '@/registry/magicui/aurora-text'
+import AffiliateStrip from './AffiliateStrip'
 import FluidTabs from './animata/fluid-tabs'
-import HoverInteraction from './animata/hover-interaction'
 import CaseStudyCard from './card/case-study-card'
-import { ProductCard } from './ProductCard'
+import { LineShadowTextDemo } from './magic/LineShadow'
+import { BoxRevealDemo } from './magicui/BoxReveal'
 
 
 const products = [
@@ -42,43 +43,8 @@ export default function HeroSection() {
           className="relative left-[calc(50%-11rem)] aspect-1155/678 w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]"
         />
       </div>
-      <FluidTabs />
-
-
-      <CaseStudyCard
-        image="images/steam.png"
-        link="https://github.com/codse/animata"
-        type="simple-image"
-        title="Animata"
-      />
-
-
-      <div className="max-w-7xl mx-auto">
-        <h1 className="text-4xl font-bold text-center mb-12 text-gray-900 dark:text-white">Unsere Produkte</h1>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {products.map((product, index) => (
-            <ProductCard key={index} {...product} />
-          ))}
-        </div>
-      </div>
-
-
-      <div className="mx-auto max-w-2xl py-2 sm:py-12 lg:py-14">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="hidden sm:mb-8 sm:flex sm:justify-center"
-        >
-          <div className="relative rounded-full px-3 py-1 text-sm/6 text-gray-400 ring-1 ring-gray-800 hover:ring-gray-700">
-            Mukaan.de{' '}
-            <a href="https://www.instagram.com/mukaan.de/" target="_blank" rel="noopener noreferrer" className="font-semibold text-indigo-400">
-              <span className="absolute inset-0" aria-hidden="true" />
-              Folge uns auf Instagram <span aria-hidden="true">&rarr;</span>
-            </a>
-          </div>
-        </motion.div>
-      </div>
+      <BoxRevealDemo />
+      <AffiliateStrip />
     </div>
   )
 }

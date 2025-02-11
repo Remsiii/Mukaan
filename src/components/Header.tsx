@@ -49,10 +49,6 @@ export default function Header() {
     })
   }, [scrollY])
 
-  const handleLogout = async () => {
-    await auth.signOut()
-    setProfile(null)
-  }
 
   return (
     <>
@@ -78,32 +74,7 @@ export default function Header() {
               />
             </Link>
           </div>
-
-          {/* Desktop Navigation zentriert */}
-          <div className="hidden lg:flex flex-1 justify-center">
-            <AnimatedGradientTextDemo />
-            <PopoverGroup className="flex gap-x-12">
-              {navigation.map((item) => (
-                <motion.div
-                  key={item.name}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  style={{ touchAction: 'manipulation' }}
-                >
-                  <Link
-                    to={item.href}
-                    className={`flex items-center text-sm font-semibold ${location.pathname === item.href
-                      ? 'text-indigo-600'
-                      : 'text-gray-900 hover:text-indigo-600'
-                      }`}
-                  >
-                    <item.icon className="h-5 w-5 mr-1" />
-                    <span>{item.name}</span>
-                  </Link>
-                </motion.div>
-              ))}
-            </PopoverGroup>
-          </div>
+          <AnimatedGradientTextDemo />
 
         </nav>
 
