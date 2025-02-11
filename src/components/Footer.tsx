@@ -2,6 +2,9 @@ import { motion } from 'framer-motion'
 import { useInView } from 'framer-motion'
 import { useRef } from 'react'
 import { HeartIcon, SparklesIcon } from '@heroicons/react/24/solid'
+import { ScratchToReveal } from '../registry/magicui/scratch-to-reveal'
+import { DockDemo } from '../registry/magicui/dock-icons'
+import { ArrowTopRightIcon } from "@radix-ui/react-icons";
 
 const socialLinks = [
   { name: 'instagram', href: '#', icon: 'instagram.svg' },
@@ -69,10 +72,10 @@ export default function Footer() {
       className=""
     >
       <div className="mx-auto max-w-7xl overflow-hidden px-6 py-12 sm:py-16 lg:px-8">
-        {/* Donation Section */}
+
         <motion.div
           variants={itemVariants}
-          className="mb-12 flex justify-center"
+          className="flex justify-center z-0"
         >
           <motion.div
             variants={donationVariants}
@@ -81,6 +84,7 @@ export default function Footer() {
             className="relative rounded-2xl bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 p-[2px] cursor-pointer transform transition-transform hover:scale-105"
             onClick={() => window.open('http://paypal.me/mukaande', '_blank')}
           >
+
             <div className="relative rounded-2xl bg-gray-900 px-8 py-6 hover:bg-gray-800/80 transition-colors">
               <div className="flex items-center gap-4">
                 <motion.div
@@ -113,19 +117,8 @@ export default function Footer() {
           </motion.div>
         </motion.div>
 
-        <motion.div
-          variants={itemVariants}
-          className="mt-10 flex justify-center space-x-10"
-        >
-          <a href="/Mukaan/impressum" className="text-gray-400 hover:text-gray-200 transition-colors">
-            <span className="sr-only">Impressum</span>
-            Impressum
-          </a>
-          <a href="/Mukaan/datenschutz" className="text-gray-400 hover:text-gray-200 transition-colors">
-            <span className="sr-only">Datenschutz</span>
-            Datenschutz
-          </a>
-        </motion.div>
+
+
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -134,23 +127,8 @@ export default function Footer() {
           className="mt-8 flex justify-center space-x-4"
         >
           <span className="text-gray-400 text-center sm:text-left">Finde mich auf Social Media:</span>
-          {socialLinks.map((item) => (
-            <motion.a
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              key={item.name}
-              href={item.href}
-              className="text-gray-400 hover:text-gray-200 transition-colors"
-            >
-              <span className="sr-only">{item.name}</span>
-              <img
-                src={`/Mukaan/social/${item.icon}`}
-                alt={item.name}
-                className="h-6 w-6 brightness-0 invert opacity-75 hover:opacity-100 transition-all"
-              />
-            </motion.a>
-          ))}
         </motion.div>
+        <DockDemo />
 
         <motion.div
           variants={itemVariants}
@@ -159,8 +137,40 @@ export default function Footer() {
           <p className="text-center text-xs leading-5 text-gray-400">
             &copy; {new Date().getFullYear()} Mukaan. All Rights Reserved.
           </p>
+          <motion.div
+            variants={itemVariants}
+            className="mt-5 mb-25 flex justify-center space-x-10"
+          >
+            <a href="/Mukaan/impressum" className="text-gray-400 hover:text-gray-200 transition-colors">
+              <span className="sr-only">Impressum</span>
+              Impressum
+            </a>
+            <a href="/Mukaan/datenschutz" className="text-gray-400 hover:text-gray-200 transition-colors">
+              <span className="sr-only">Datenschutz</span>
+              Datenschutz
+            </a>
+
+            <button className="text-md group flex items-center justify-center gap-1 rounded-md bg-gray-800 px-6 py-3 text-white hover:cursor-pointer hover:text-yellow-300">
+              <span>Impressum</span>
+              <ArrowTopRightIcon
+                height={20}
+                width={20}
+                className="opacity-75 transition-all group-hover:-translate-y-1 group-hover:translate-x-1 group-hover:scale-110 group-hover:text-yellow-300 group-hover:opacity-100"
+              />
+            </button>
+            <button className="text-md group flex items-center justify-center gap-1 rounded-md bg-gray-800 px-6 py-3 text-white hover:cursor-pointer hover:text-yellow-300">
+              <span>Datenschutz</span>
+              <ArrowTopRightIcon
+                height={20}
+                width={20}
+                className="opacity-75 transition-all group-hover:-translate-y-1 group-hover:translate-x-1 group-hover:scale-110 group-hover:text-yellow-300 group-hover:opacity-100"
+              />
+            </button>
+          </motion.div>
         </motion.div>
+
       </div>
+
     </motion.footer>
   )
 }

@@ -18,6 +18,8 @@ import LoginPage from "./pages/LoginPage";
 import EditCalloutPage from "./pages/EditCalloutPage";
 import EditableCategory from './components/EditableCategory';
 import EditablePageContent from './components/EditablePageContent';
+import { ScrollProgress } from "./registry/magicui/scroll-progress";
+import FixedNavCard from "./components/Fixed-Nav-Card";
 
 // Wrap Category with title management
 const Home = () => {
@@ -36,6 +38,9 @@ function App() {
     <Router basename="/Mukaan">
       <div className="flex min-h-screen flex-col">
         <Header />
+        <FixedNavCard />
+        {/* Spacer in Höhe des Headers; passe den Wert an die tatsächliche Höhe an */}
+        <div className="h-20" />
         <main className="flex-grow">
           <AnimatePresence mode="wait">
             <Routes>
