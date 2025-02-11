@@ -9,27 +9,27 @@ const tabs = [
     {
         id: "all",
         label: "Alle",
-        icon: <Shapes size={18} />,
+        icon: <Shapes className="sm:size-[18px] size-[22px]" />,
     },
     {
         id: "tipps",
         label: "Tipps",
-        icon: <Sparkles size={18} />,
+        icon: <Sparkles className="sm:size-[18px] size-[22px]" />,
     },
     {
         id: "pc",
         label: "PC",
-        icon: <Inbox size={18} />,
+        icon: <Inbox className="sm:size-[18px] size-[22px]" />,
     },
     {
         id: "angebote",
         label: "Angebote",
-        icon: <Landmark size={18} />,
+        icon: <Landmark className="sm:size-[18px] size-[22px]" />,
     },
     {
         id: "apps",
         label: "Apps",
-        icon: <PieChart size={18} />,
+        icon: <PieChart className="sm:size-[18px] size-[22px]" />,
     },
 ];
 
@@ -48,28 +48,32 @@ export default function FluidTabs() {
     const getTabIndex = (tabId: string) => tabs.findIndex((tab) => tab.id === tabId);
 
     return (
-        <div className="flex items-center justify-center py-4">
-            <div className="relative flex w-full max-w-xl space-x-1 overflow-hidden rounded-full bg-[#f5f1eb] p-1 shadow-lg">
+        <div className="flex items-center justify-center py-2 sm:py-4">
+            <div className="relative flex w-full max-w-xl space-x-0.25 sm:space-x-1 overflow-hidden rounded-full bg-[#f5f1eb] p-0.5 sm:p-1 shadow-lg">
                 <AnimatePresence initial={false}>
                     <motion.div
                         key={activeFilter}
-                        className="absolute inset-y-0 my-1 rounded-full bg-white"
-                        initial={{ x: `${getTabIndex(prevActiveTab) * 20}%` }}
-                        animate={{ x: `${getTabIndex(activeFilter) * 20}%` }}
-                        transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                        style={{ width: '20%' }}
+                        className="absolute rounded-full bg-white"
+                        initial={{ left: `${getTabIndex(prevActiveTab) * (100 / tabs.length)}%` }}
+                        animate={{ left: `${getTabIndex(activeFilter) * (100 / tabs.length)}%` }}
+                        transition={{ type: "spring", stiffness: 400, damping: 30, mass: 0.8 }}
+                        style={{
+                            width: `${100 / tabs.length}%`,
+                            height: '85%',
+                            top: '7.5%'
+                        }}
                     />
                 </AnimatePresence>
                 {tabs.map((tab) => (
                     <motion.button
                         key={tab.id}
-                        className={`relative z-10 flex w-full items-center justify-center gap-1.5 px-3 py-2 text-sm font-medium transition-colors duration-300 
+                        className={`relative z-10 flex w-full flex-col sm:flex-row items-center justify-center gap-0 sm:gap-1.5 px-1 sm:px-3 py-2 sm:py-2 text-[10px] sm:text-sm font-medium transition-colors duration-300 
                             ${activeFilter === tab.id ? "font-bold text-black" : "text-gray-500"}
                             ${touchedTab === tab.id ? "blur-sm" : ""}`}
                         onClick={() => handleTabClick(tab.id)}
                     >
                         {tab.icon}
-                        {tab.label}
+                        <span className="mt-1 sm:mt-0">{tab.label}</span>
                     </motion.button>
                 ))}
             </div>
