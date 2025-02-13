@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { motion, useScroll, useMotionValueEvent } from 'framer-motion'
 import {
@@ -14,7 +14,6 @@ import {
   DevicePhoneMobileIcon,
   TagIcon,
 } from '@heroicons/react/24/outline'
-import { auth, type Profile, subscribeToAuthChanges } from '../lib/auth'
 import { ScrollProgress } from '../registry/magicui/scroll-progress'
 import { AnimatedGradientTextDemo } from './ui/Geizhals'
 
@@ -27,17 +26,11 @@ const navigation = [
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const [, setProfile] = useState<Profile | null>(null)
   const [isVisible, setIsVisible] = useState(true)
   const [, setLastScrollY] = useState(0)
   const location = useLocation()
   const { scrollY } = useScroll()
 
-  useEffect(() => {
-    auth.getProfile().then(setProfile)
-    const unsubscribe = subscribeToAuthChanges(setProfile)
-    return () => unsubscribe()
-  }, [])
 
   useMotionValueEvent(scrollY, "change", (latest) => {
     // Only show header when very close to top (within 10px)

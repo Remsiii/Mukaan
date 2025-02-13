@@ -13,11 +13,6 @@ import TipsPage from "./pages/TipsPage";
 import AngebotePage from "./pages/AngebotePage";
 import Impressum from './pages/Impressum';
 import Datenschutz from './pages/Datenschutz';
-import AdminPage from "./pages/AdminPage";
-import LoginPage from "./pages/LoginPage";
-import EditCalloutPage from "./pages/EditCalloutPage";
-import EditableCategory from './components/EditableCategory';
-import EditablePageContent from './components/EditablePageContent';
 import FixedNavCard from "./components/Fixed-Nav-Card";
 import DealsPage from "./app/deals/page";
 import { FilterProvider } from './context/FilterContext';
@@ -51,17 +46,20 @@ function App() {
                 <Route path="/pc" element={<PCScreen />} />
                 <Route path="/apps" element={<AppsScreen />} />
                 <Route path="/tipps" element={<TipsPage />} />
-                <Route path="/admin" element={<AdminPage />} />
-                <Route path="/admin/edit/:id" element={<EditCalloutPage />} />
-                <Route path="/admin/edit-category" element={<EditableCategory />} />
-                <Route path="/login" element={<LoginPage />} />
+
                 <Route path="/angebote" element={<AngebotePage />} />
                 <Route path="/:slug" element={<DetailPage />} />
-                <Route path="/:slug/edit" element={<EditablePageContent />} />
                 <Route path="/tiktok" element={<TikTokScreen />} />
                 <Route path="/impressum" element={<Impressum />} />
                 <Route path="/datenschutz" element={<Datenschutz />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
+
+
+                {/* <Route path="/admin" element={<AdminPage />} />
+                <Route path="/admin/edit/:id" element={<EditCalloutPage />} />
+                <Route path="/admin/edit-category" element={<EditableCategory />} />
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/:slug/edit" element={<EditablePageContent />} /> */}
               </Routes>
             </AnimatePresence>
           </main>
