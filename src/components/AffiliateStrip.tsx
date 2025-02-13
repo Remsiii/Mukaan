@@ -36,12 +36,14 @@ export default function AffiliateStrip() {
                         </div>
 
                         <motion.button
+                            type="button"
                             whileHover={{ scale: 1.02, x: 3 }}
                             whileTap={{ scale: 0.98 }}
                             transition={{ duration: 0.2 }}
-                            onClick={() => navigate('/deals')}
-                            className="group flex items-center gap-2 rounded-lg bg-gray-800/80 px-4 py-2 text-sm font-medium text-gray-200 
-                            transition-all hover:bg-gray-700/80 hover:shadow-md"
+                            onClick={() => navigate('/deals')}                            // Inline styles override mobile defaults: force desired background color
+                            style={{ WebkitAppearance: 'none', backgroundColor: 'rgba(31,41,55,0.8)' }}
+                            className="group flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium text-gray-200 
+                            transition-all hover:bg-gray-700/80 hover:shadow-md appearance-none"
                         >
                             Deals ansehen
                             <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />

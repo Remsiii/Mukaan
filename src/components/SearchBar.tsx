@@ -9,9 +9,7 @@ interface SearchResult {
   image: string;
   badge: string;
   link: string;
-  slug?: string; // Make slug optional
-  price?: string; // Add optional price
-  specs?: string[]; // Add optional specs
+  slug: string;
 }
 
 interface SearchBarProps {
@@ -58,7 +56,7 @@ export function SearchBar({ collections, onResultClick }: SearchBarProps) {
                 {filteredCollections.map((result, index) => (
                   <Link
                     key={result.title}
-                    to={result.slug ? `/${result.slug}` : result.link}
+                    to={`/${result.slug}`}
                     onClick={() => {
                       setSearchQuery("");
                       setIsSearching(false);

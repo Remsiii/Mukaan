@@ -71,9 +71,10 @@ button:focus-visible {
     color: #747bff;
   }
 
-  button {
+  /* Remove the global button background override */
+  /* button {
     background-color: #f9f9f9;
-  }
+  } */
 }
 
 @keyframes scaleUpDown {
