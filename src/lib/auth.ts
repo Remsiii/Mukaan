@@ -39,6 +39,20 @@ export const auth = {
   // Sign out
   signOut: async () => {
     await supabase.auth.signOut();
+  },
+
+  async signIn(email: string, password: string) {
+    // Temporarily store auth state in localStorage
+    if (email === ADMIN_EMAIL && password === 'admin') {
+      localStorage.setItem('user', JSON.stringify({ email }));
+      return { user: { email }, error: null };
+    }
+    return { user: null, error: 'Invalid credentials' };
+  },
+
+  getUser() {
+    const user = localStorage.getItem('user');
+    return user ? JSON.parse(user) : null;
   }
 };
 
@@ -47,7 +61,7 @@ export const subscribeToAuthChanges = (callback: (profile: Profile | null) => vo
   const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
     if (event === 'SIGNED_IN') {
       const profile = await auth.getProfile();
-      
+
       // If this is a new sign in, create a profile
       if (!profile && session?.user) {
         const newProfile = {
