@@ -104,9 +104,9 @@ export function SearchBar({ collections }: SearchBarProps) {
       {/*
       {isSearching && searchQuery.length > 0 && (
         <div
-          className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40"
+          className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 "
           onClick={closeSearch}
-        />
+        /> 
       )} */}
     </div>
   );
