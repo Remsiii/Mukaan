@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Inbox, Landmark, PieChart, Shapes, Sparkles } from "lucide-react";
 import { useFilter } from "../../context/FilterContext";

@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { Search, Copy, Share2, ExternalLink, Check, Plus } from 'lucide-react'
+import { Copy, Share2, ExternalLink, Check, Plus } from 'lucide-react'
 import { useState } from 'react'
 
 interface Deal {
@@ -34,7 +34,7 @@ const initialDeals: Deal[] = [
 ]
 
 export default function DealsPage() {
-    const [deals, setDeals] = useState<Deal[]>(initialDeals)
+    const [deals] = useState<Deal[]>(initialDeals)
     const [showSubmitForm, setShowSubmitForm] = useState(false)
     const [copiedCode, setCopiedCode] = useState<string | null>(null)
 

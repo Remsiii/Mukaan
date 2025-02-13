@@ -1,14 +1,12 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { motion, useScroll, useMotionValueEvent } from 'framer-motion'
 import {
   Dialog,
-  PopoverGroup,
 } from '@headlessui/react'
 import {
-  Bars3Icon,
   XMarkIcon,
   ComputerDesktopIcon,
   LightBulbIcon,
@@ -29,11 +27,10 @@ const navigation = [
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const [profile, setProfile] = useState<Profile | null>(null)
+  const [, setProfile] = useState<Profile | null>(null)
   const [isVisible, setIsVisible] = useState(true)
-  const [lastScrollY, setLastScrollY] = useState(0)
+  const [, setLastScrollY] = useState(0)
   const location = useLocation()
-  const navigate = useNavigate()
   const { scrollY } = useScroll()
 
   useEffect(() => {

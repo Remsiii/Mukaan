@@ -1,6 +1,6 @@
 "use client";
 
-import React, { ElementType, useState } from "react";
+import { ElementType, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 
 // default imports

@@ -2,18 +2,7 @@ import { motion } from 'framer-motion'
 import { useInView } from 'framer-motion'
 import { useRef } from 'react'
 import { HeartIcon, SparklesIcon } from '@heroicons/react/24/solid'
-import { ScratchToReveal } from '../registry/magicui/scratch-to-reveal'
 import { DockDemo } from '../registry/magicui/dock-icons'
-import { ArrowTopRightIcon } from "@radix-ui/react-icons";
-
-const socialLinks = [
-  { name: 'instagram', href: '#', icon: 'instagram.svg' },
-  { name: 'youTube', href: '#', icon: 'youtube.svg' },
-  { name: 'tikTok', href: '#', icon: 'tiktok.svg' },
-  { name: 'whatsApp', href: '#', icon: 'whatsapp.svg' },
-  { name: 'discord', href: '#', icon: 'discord.svg' },
-  { name: 'telegram', href: '#', icon: 'telegram.svg' },
-]
 
 const footerVariants = {
   hidden: { opacity: 0, y: 50 },

@@ -1,33 +1,9 @@
 'use client'
 
-import { AuroraText } from '@/registry/magicui/aurora-text'
 import AffiliateStrip from './AffiliateStrip'
-import FluidTabs from './animata/fluid-tabs'
-import CaseStudyCard from './card/case-study-card'
-import { LineShadowTextDemo } from './magic/LineShadow'
 import { BoxRevealDemo } from './magicui/BoxReveal'
-import { Particles } from '@/registry/magicui/particles'
 import { Meteors } from '@/registry/magicui/meteors'
 
-
-const products = [
-  {
-    imageUrl: "images/steam.png?height=300&width=400",
-    title: "Spiele immer günstiger bekommen",
-  },
-  {
-    imageUrl: "images/steamphoto.png?height=300&width=400",
-    title: "Smartwatch mit Herzfrequenzmesser, GPS und über 50 Sportmodi für Fitnessbegeisterte",
-  },
-  {
-    imageUrl: "placeholder.svg?height=300&width=400",
-    title: "True Wireless Ohrhörer mit aktiver Geräuschunterdrückung und anpassbaren Touch-Bedienelementen",
-  },
-  {
-    imageUrl: "/placeholder.svg?height=300&width=400",
-    title: "4K Ultra HD Smart TV mit HDR, Dolby Atmos und integriertem Sprachassistenten für immersives Entertainment",
-  },
-]
 
 
 export default function HeroSection() {

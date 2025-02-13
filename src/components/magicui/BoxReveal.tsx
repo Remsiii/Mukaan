@@ -1,4 +1,3 @@
-import { AuroraText } from "@/registry/magicui/aurora-text";
 import { BoxReveal } from "@/registry/magicui/box-reveal";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
@@ -107,7 +106,7 @@ export function BoxRevealDemo() {
                 </motion.div>
             </div>
 
-            <div className="absolute inset-0 bg-[url('/noise.png')] opacity-[0.02] mix-blend-overlay pointer-events-none" />
+            <div className="absolute inset-0 opacity-[0.02] mix-blend-overlay pointer-events-none" />
         </div>
     );
 }

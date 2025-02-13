@@ -18,9 +18,7 @@ import LoginPage from "./pages/LoginPage";
 import EditCalloutPage from "./pages/EditCalloutPage";
 import EditableCategory from './components/EditableCategory';
 import EditablePageContent from './components/EditablePageContent';
-import { ScrollProgress } from "./registry/magicui/scroll-progress";
 import FixedNavCard from "./components/Fixed-Nav-Card";
-import HeroSection from './components/HeroSection';
 import DealsPage from "./app/deals/page";
 import { FilterProvider } from './context/FilterContext';
 

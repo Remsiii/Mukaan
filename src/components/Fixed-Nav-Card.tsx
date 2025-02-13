@@ -3,11 +3,8 @@ import { AnimatedDock } from "./animata/animated-dock";
 import { Home, Search, X } from "lucide-react";
 import { ComputerDesktopIcon, LightBulbIcon } from "@heroicons/react/24/outline";
 import {
-    Bars3Icon,
-    XMarkIcon,
     GiftIcon,
     DevicePhoneMobileIcon,
-    TagIcon,
 } from '@heroicons/react/24/outline'
 import { SearchBar } from "./SearchBar";
 import { callouts } from "../data/callouts";

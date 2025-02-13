@@ -1,7 +1,6 @@
 import { cn } from "../../../lib/utils";
 import {
   AnimatePresence,
-  MotionValue,
   motion,
   useMotionValue,
   useSpring,
@@ -22,7 +21,7 @@ export interface AnimatedDockProps {
   largeClassName?: string;
 }
 
-export function AnimatedDock({ items, largeClassName }: AnimatedDockProps) {
+export function AnimatedDock({ items }: AnimatedDockProps) {
   const mouseX = useMotionValue(Infinity);
 
   return (
@@ -58,7 +57,7 @@ function DockIcon({
   const ref = useRef<HTMLDivElement>(null);
   const distanceFromMouse = useTransform(mouseX, (val) => {
     const bounds = ref.current?.getBoundingClientRect() ?? { x: 0, width: 0 };
-    return val - bounds.x - bounds.width / 2;
+    return (val as number) - bounds.x - bounds.width / 2;
   });
 
   const widthTransform = useTransform(distanceFromMouse, [-150, 0, 150], [40, 80, 40]);
