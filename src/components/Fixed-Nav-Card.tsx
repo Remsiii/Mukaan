@@ -26,6 +26,11 @@ const FixedNavCard: React.FC = () => {
 
     const dockItems = [
         {
+            href: "/",
+            icon: <Home />,
+            title: "Home",
+        },
+        {
             icon: <Search />,
             title: "Search",
             onClick: () => setIsSearchOpen(true),

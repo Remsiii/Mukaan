@@ -6,6 +6,8 @@ import FluidTabs from './animata/fluid-tabs'
 import CaseStudyCard from './card/case-study-card'
 import { LineShadowTextDemo } from './magic/LineShadow'
 import { BoxRevealDemo } from './magicui/BoxReveal'
+import { Particles } from '@/registry/magicui/particles'
+import { Meteors } from '@/registry/magicui/meteors'
 
 
 const products = [
@@ -43,8 +45,13 @@ export default function HeroSection() {
           className="relative left-[calc(50%-11rem)] aspect-1155/678 w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]"
         />
       </div>
-      <BoxRevealDemo />
+
+      <div className="relative flex h-[300px] w-full flex-col items-center justify-center overflow-hidden rounded-lg border bg-background">
+        <BoxRevealDemo />
+        <Meteors number={30} />
+      </div>
       <AffiliateStrip />
+
     </div>
   )
 }

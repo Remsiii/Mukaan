@@ -3,8 +3,8 @@ import { impressumData } from '../data/legal/impressumData'
 
 const pageVariants = {
   initial: { opacity: 0, y: 20 },
-  animate: { 
-    opacity: 1, 
+  animate: {
+    opacity: 1,
     y: 0,
     transition: { duration: 0.8, ease: [0.4, 0, 0.2, 1] }
   }
@@ -12,8 +12,8 @@ const pageVariants = {
 
 const sectionVariants = {
   initial: { opacity: 0, y: 30 },
-  animate: { 
-    opacity: 1, 
+  animate: {
+    opacity: 1,
     y: 0,
     transition: { duration: 0.5, ease: "easeOut" }
   }
@@ -23,7 +23,7 @@ export default function Impressum() {
   const { company, contact, legal } = impressumData
 
   return (
-    <motion.div 
+    <motion.div
       variants={pageVariants}
       initial="initial"
       animate="animate"
@@ -39,9 +39,9 @@ export default function Impressum() {
             Hier finden Sie alle wichtigen Informationen zu unserem Unternehmen. Wir legen Wert auf Transparenz und freuen uns über Ihr Vertrauen.
           </p>
         </div>
-        
+
         <div className="grid gap-8 bg-gray-800/50 backdrop-blur-sm rounded-xl p-8 shadow-xl border border-gray-700/50">
-          <motion.section 
+          <motion.section
             variants={sectionVariants}
             initial="initial"
             whileInView="animate"
@@ -65,7 +65,7 @@ export default function Impressum() {
             </div>
           </motion.section>
 
-          <motion.section 
+          <motion.section
             variants={sectionVariants}
             initial="initial"
             whileInView="animate"
@@ -105,7 +105,7 @@ export default function Impressum() {
                 <h3 className="text-lg font-semibold text-white mb-2">Haftung für Links</h3>
                 <p className="text-sm">{legal.haftungLinks}</p>
               </div>
-              
+
               <div>
                 <h3 className="text-lg font-semibold text-white mb-2">Liability for content</h3>
                 <p className="text-sm">{legal.liabilityContent}</p>

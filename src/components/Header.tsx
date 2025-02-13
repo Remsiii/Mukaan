@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { motion, useScroll } from 'framer-motion'
+import { motion, useScroll, useMotionValueEvent } from 'framer-motion'
 import {
   Dialog,
   PopoverGroup,
@@ -30,11 +30,10 @@ const navigation = [
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [profile, setProfile] = useState<Profile | null>(null)
+  const [isVisible, setIsVisible] = useState(true)
+  const [lastScrollY, setLastScrollY] = useState(0)
   const location = useLocation()
   const navigate = useNavigate()
-
-  // Zustand für den Sichtbarkeitsstatus via useScroll
-  const [isScrolled, setIsScrolled] = useState(false)
   const { scrollY } = useScroll()
 
   useEffect(() => {
@@ -43,18 +42,35 @@ export default function Header() {
     return () => unsubscribe()
   }, [])
 
-  useEffect(() => {
-    return scrollY.onChange((latest) => {
-      latest > 100 ? setIsScrolled(true) : setIsScrolled(false)
-    })
-  }, [scrollY])
-
+  useMotionValueEvent(scrollY, "change", (latest) => {
+    // Only show header when very close to top (within 10px)
+    setIsVisible(latest < 10)
+    setLastScrollY(latest)
+  })
 
   return (
     <>
       <ScrollProgress className="top-[0px]" />
-      <header className="fixed w-full top-0 z-50 transition-transform duration-300 translate-y-0">
-
+      <motion.header
+        className="fixed w-full top-0 z-50 bg-transparent"
+        initial={{
+          y: -20,
+          opacity: 0
+        }}
+        animate={{
+          y: isVisible ? 0 : '-100%',
+          opacity: isVisible ? 1 : 0
+        }}
+        transition={{
+          duration: isVisible ? 0.8 : 1,
+          ease: [0.22, 1, 0.36, 1],
+          opacity: {
+            duration: isVisible ? 0.8 : 1.0
+          },
+          // Add initial animation settings
+          delay: 0.2, // Slight delay on page load
+        }}
+      >
         <nav
           aria-label="Global"
           className="flex max-w-7xl items-center justify-between p-6 lg:px-8"
@@ -127,7 +143,7 @@ export default function Header() {
             </div>
           </Dialog.Panel>
         </Dialog>
-      </header>
+      </motion.header>
     </>
 
   )

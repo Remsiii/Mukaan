@@ -122,14 +122,15 @@ export default function DealsPage() {
                                     </div>
                                 )}
 
-                                <div className="flex items-center gap-4">
+                                <div className="flex items-center gap-4 text-white">
                                     <a
                                         href={deal.affiliateLink}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="flex-1 text-white bg-blue-900 hover:bg-blue-500 px-4 py-2 rounded-lg text-center font-semibold transition-all duration-300"
+                                        className="flex-1 bg-blue-900 hover:bg-blue-500 px-4 py-2 rounded-lg text-center font-semibold transition-all duration-300 text-white group"
                                     >
-                                        Zum Angebot <ExternalLink className="w-4 h-4 inline ml-1 text-white" />
+                                        <span className="text-white">Zum Angebot</span>
+                                        <ExternalLink className="w-4 h-4 inline ml-1 text-white" />
                                     </a>
                                     <button
                                         onClick={() => handleShareDeal(deal)}

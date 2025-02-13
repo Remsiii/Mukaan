@@ -16,11 +16,6 @@ export function BoxRevealDemo() {
 
     return (
         <div className="relative h-[25vh] w-full overflow-hidden rounded-xl">
-
-            {/* Dark background with subtle gradient - increased blur */}
-            <div className="absolute inset-0 bg-gradient-to-br from-gray-950/90 via-purple-950/40 to-gray-950/90 blur-[400px]" />
-
-
             {/* Ambient light effects - darker and more subtle */}
             <div className="absolute inset-0 overflow-hidden">
                 <motion.div
@@ -59,7 +54,8 @@ export function BoxRevealDemo() {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.8, delay: 0.2 }}
                     >
-                        <span className="inline-block">Muhammed{" "}</span>
+
+                        <span className="inline-block pointer-events-none whitespace-pre-wrap bg-gradient-to-b from-gray-500 to-gray-100/80 bg-clip-text text-centerfont-semibold leading-none text-transparent">Muhammed{" "}</span>
                         <motion.span
                             className="bg-gradient-to-r from-purple-400 via-blue-400 to-purple-400 bg-clip-text text-transparent inline-block"
                             animate={{
