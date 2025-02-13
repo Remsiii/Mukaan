@@ -1,32 +1,61 @@
 "use client";
 
 import React from "react";
-
 import { Dock, DockIcon } from "@/registry/magicui/dock";
 
 export type IconProps = React.HTMLAttributes<SVGElement>;
+
+interface SocialMediaLinks {
+    instagram: string;
+    discord: string;
+    tiktok: string;
+    whatsapp: string;
+    twitch: string;
+    youtube: string;
+}
+
+const socialLinks: SocialMediaLinks = {
+    instagram: "https://www.instagram.com/mukaan.de/",
+    discord: "https://dsc.gg/hypetech",
+    tiktok: "https://www.tiktok.com/@muhammed_kaan",
+    whatsapp: "https://whatsapp.com/channel/0029Va7JWL8CcW4sTGsJt942",
+    twitch: "https://www.twitch.tv/muhammed_kaan_tiktok",
+    youtube: "https://www.youtube.com/channel/UCn1sReyJQqBIHNV-oi1Q1zg"
+};
 
 export function DockDemo() {
     return (
         <div className="relative">
             <Dock direction="middle">
                 <DockIcon>
-                    <Icons.instagram className="size-6" />
+                    <a href={socialLinks.instagram} target="_blank" rel="noopener noreferrer">
+                        <Icons.instagram className="size-6" />
+                    </a>
                 </DockIcon>
                 <DockIcon>
-                    <Icons.discord className="size-6" />
+                    <a href={socialLinks.discord} target="_blank" rel="noopener noreferrer">
+                        <Icons.discord className="size-6" />
+                    </a>
                 </DockIcon>
                 <DockIcon>
-                    <Icons.tiktok className="size-6" />
+                    <a href={socialLinks.tiktok} target="_blank" rel="noopener noreferrer">
+                        <Icons.tiktok className="size-6" />
+                    </a>
                 </DockIcon>
                 <DockIcon>
-                    <Icons.whatsapp className="size-6" />
+                    <a href={socialLinks.whatsapp} target="_blank" rel="noopener noreferrer">
+                        <Icons.whatsapp className="size-6" />
+                    </a>
                 </DockIcon>
                 <DockIcon>
-                    <Icons.twitch className="size-6" />
+                    <a href={socialLinks.twitch} target="_blank" rel="noopener noreferrer">
+                        <Icons.twitch className="size-6" />
+                    </a>
                 </DockIcon>
                 <DockIcon>
-                    <Icons.youtube className="size-6" />
+                    <a href={socialLinks.youtube} target="_blank" rel="noopener noreferrer">
+                        <Icons.youtube className="size-6" />
+                    </a>
                 </DockIcon>
             </Dock>
         </div>

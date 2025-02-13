@@ -1,6 +1,5 @@
 import { usePageTitle } from '../hooks/usePageTitle'
 import { motion } from 'framer-motion'
-import { SearchBar } from './SearchBar'
 
 const apps = [
   {
@@ -148,7 +147,7 @@ export function PCScreen() {
             transition={{ delay: 0.2 }}
             className="mt-8"
           >
-            <SearchBar collections={pcConfigs} />
+            {/* <SearchBar collections={pcConfigs}  /> */}
           </motion.div>
         </div>
 

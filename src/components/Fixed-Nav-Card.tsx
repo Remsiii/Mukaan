@@ -11,6 +11,7 @@ const mappedCallouts = callouts.map((c) => ({
     image: c.imageSrc,
     badge: "", // Hier kannst du ggf. einen Badge-Text setzen
     link: c.pageContent.button?.link ?? "",
+    slug: c.slug,
 }));
 
 const FixedNavCard: React.FC = () => {
@@ -49,7 +50,10 @@ const FixedNavCard: React.FC = () => {
                         <X size={24} />
                     </button>
                     <div className="relative mx-auto mt-20 max-w-2xl bg-gray-800 p-6 rounded-2xl shadow-lg">
-                        <SearchBar collections={mappedCallouts} />
+                        <SearchBar
+                            collections={mappedCallouts}
+                            onResultClick={() => setIsSearchOpen(false)} // Add this line
+                        />
                     </div>
                 </div>
             )}

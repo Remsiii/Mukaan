@@ -2,34 +2,34 @@
 
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Inbox, Landmark, PieChart, Shapes, Sparkles } from "lucide-react";
+import { GridIcon, LightbulbIcon, MonitorIcon, TagIcon, AppWindow } from "lucide-react";
 import { useFilter } from "../../context/FilterContext";
 
 const tabs = [
     {
         id: "all",
         label: "Alle",
-        icon: <Shapes className="sm:size-[18px] size-[22px]" />,
+        icon: <GridIcon className="sm:size-[18px] size-[22px]" />,
     },
     {
         id: "tipps",
         label: "Tipps",
-        icon: <Sparkles className="sm:size-[18px] size-[22px]" />,
+        icon: <LightbulbIcon className="sm:size-[18px] size-[22px]" />,
     },
     {
         id: "pc",
         label: "PC",
-        icon: <Inbox className="sm:size-[18px] size-[22px]" />,
+        icon: <MonitorIcon className="sm:size-[18px] size-[22px]" />,
     },
     {
         id: "angebote",
         label: "Angebote",
-        icon: <Landmark className="sm:size-[18px] size-[22px]" />,
+        icon: <TagIcon className="sm:size-[18px] size-[22px]" />,
     },
     {
         id: "apps",
         label: "Apps",
-        icon: <PieChart className="sm:size-[18px] size-[22px]" />,
+        icon: <AppWindow className="sm:size-[18px] size-[22px]" />,
     },
 ];
 
