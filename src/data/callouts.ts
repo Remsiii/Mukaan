@@ -97,7 +97,7 @@ export const callouts: Callout[] = [
       ],
       button: {
         text: 'Mehr Produktivitäts-Tipps',
-        link: '/blog/productivity'
+        link: 'https://www.instant-gaming.com/de/playstation/gaming-karten/'
       }
     }
   },
@@ -135,7 +135,7 @@ export const callouts: Callout[] = [
       ],
       button: {
         text: 'Setup Guide ansehen',
-        link: '/blog/gaming-setup'
+        link: 'https://www.instant-gaming.com/de/playstation/gaming-karten/'
       }
     }
   },
@@ -173,7 +173,7 @@ export const callouts: Callout[] = [
       ],
       button: {
         text: 'Zur Software-Liste',
-        link: '/blog/software-essentials'
+        link: 'https://www.instant-gaming.com/de/playstation/gaming-karten/'
       }
     }
   },
@@ -211,7 +211,7 @@ export const callouts: Callout[] = [
       ],
       button: {
         text: 'Streaming Guide lesen',
-        link: '/blog/streaming-guide'
+        link: 'https://www.instant-gaming.com/de/playstation/gaming-karten/'
       }
     }
   },
@@ -287,7 +287,7 @@ export const callouts: Callout[] = [
       ],
       button: {
         text: 'Zum Tastatur Guide',
-        link: '/blog/keyboard-guide'
+        link: 'https://www.instant-gaming.com/de/playstation/gaming-karten/'
       }
     }
   },

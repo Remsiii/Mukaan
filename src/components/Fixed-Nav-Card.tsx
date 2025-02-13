@@ -1,11 +1,6 @@
 import React, { useState } from "react";
 import { AnimatedDock } from "./animata/animated-dock";
 import { Home, Search, X } from "lucide-react";
-import { ComputerDesktopIcon, LightBulbIcon } from "@heroicons/react/24/outline";
-import {
-    GiftIcon,
-    DevicePhoneMobileIcon,
-} from '@heroicons/react/24/outline'
 import { SearchBar } from "./SearchBar";
 import { callouts } from "../data/callouts";
 
@@ -31,26 +26,6 @@ const FixedNavCard: React.FC = () => {
             icon: <Search />,
             title: "Search",
             onClick: () => setIsSearchOpen(true),
-        },
-        {
-            href: "/pc",
-            icon: <ComputerDesktopIcon />,
-            title: "PC",
-        },
-        {
-            href: "/tipps",
-            icon: <LightBulbIcon />,
-            title: "Tipps",
-        },
-        {
-            href: "/apps",
-            icon: <DevicePhoneMobileIcon />,
-            title: "Apps",
-        },
-        {
-            href: "/angebote",
-            icon: <GiftIcon />,
-            title: "Angebote",
         },
     ];
 

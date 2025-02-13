@@ -2,6 +2,8 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
 import { callouts, Callout } from '../data/callouts'
+import { Particles } from '@/registry/magicui/particles'
+import { ArrowTopRightOnSquareIcon } from '@heroicons/react/24/outline'
 
 export default function DetailPage() {
   const { slug } = useParams<{ slug: string }>()
@@ -32,7 +34,14 @@ export default function DetailPage() {
   }
 
   return (
-    <div className="bg-white dark:bg-gray-900">
+    <div className="mt-10 border border-gray-200/20 rounded-xl">
+      <Particles
+        className="absolute inset-0 z-0"
+        quantity={100}
+        ease={80}
+        color={"#ffffff"}
+        refresh
+      />
       <motion.div
         className="relative overflow-hidden py-16"
         variants={containerVariants}
@@ -42,10 +51,10 @@ export default function DetailPage() {
         {/* Hero section */}
         <div className="relative px-6 lg:px-8">
           <div className="mx-auto max-w-2xl text-center">
-            <h1 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-6xl">
+            <h1 className="text-4xl font-bold tracking-tight text-white sm:text-6xl">
               {callout.pageContent.title}
             </h1>
-            <p className="mt-6 text-lg leading-8 text-gray-600 dark:text-gray-300">
+            <p className="mt-6 text-lg leading-8 text-gray-300">
               {callout.pageContent.subtitle}
             </p>
           </div>
@@ -74,19 +83,19 @@ export default function DetailPage() {
                 switch (block.type) {
                   case 'paragraph':
                     return (
-                      <p key={index} className="text-gray-600 dark:text-gray-300">
+                      <p key={index} className="text-gray-300 dark:text-gray-300">
                         {block.text}
                       </p>
                     )
                   case 'heading':
                     return (
-                      <h2 key={index} className="text-2xl font-bold text-gray-900 dark:text-white mt-8 mb-4">
+                      <h2 key={index} className="text-2xl font-bold text-gray-300 dark:text-white mt-8 mb-4">
                         {block.text}
                       </h2>
                     )
                   case 'list':
                     return (
-                      <ul key={index} className="list-disc list-inside space-y-2 text-gray-600 dark:text-gray-300">
+                      <ul key={index} className="list-disc list-inside space-y-2 text-gray-300 dark:text-gray-300">
                         {block.items?.map((item, itemIndex) => (
                           <li key={itemIndex}>{item}</li>
                         ))}
@@ -105,9 +114,10 @@ export default function DetailPage() {
                   href={callout.pageContent.button.link}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-block px-8 py-3 text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-md shadow-sm transition-colors duration-200"
+                  className="inline-flex items-center gap-2 px-8 py-3 text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-md shadow-sm transition-colors duration-200"
                 >
-                  {callout.pageContent.button.text}
+                  <span className="text-white">{callout.pageContent.button.text}</span>
+                  <ArrowTopRightOnSquareIcon className="h-5 w-5 text-white" />
                 </a>
               </div>
             )}
