@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { AnimatedDock } from "./animata/animated-dock";
-import { Home, Search, X } from "lucide-react";
+import { Home, Search, X, User } from "lucide-react";
 import { SearchBar } from "./SearchBar";
 import { callouts } from "../data/callouts";
+import { useNavigate } from "react-router-dom"; // Add this import
 
 // Hier wird Callouts in das von SearchBar erwartete Format gemappt:
 const mappedCallouts = callouts.map((c) => ({
@@ -16,6 +17,7 @@ const mappedCallouts = callouts.map((c) => ({
 
 const FixedNavCard: React.FC = () => {
     const [isSearchOpen, setIsSearchOpen] = useState(false);
+    const navigate = useNavigate(); // Add this line
 
     const dockItems = [
         {
@@ -27,6 +29,11 @@ const FixedNavCard: React.FC = () => {
             icon: <Search />,
             title: "Search",
             onClick: () => setIsSearchOpen(true),
+        },
+        {
+            icon: <User />,
+            title: "Login",
+            onClick: () => navigate('/login'), // Change this line to use navigation
         },
     ];
 
