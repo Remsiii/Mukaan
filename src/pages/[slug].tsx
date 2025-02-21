@@ -1,27 +1,51 @@
 import { useParams, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
-import { callouts, Callout } from '../data/callouts'
 import { Particles } from '@/registry/magicui/particles'
 import { ArrowTopRightOnSquareIcon } from '@heroicons/react/24/outline'
+import { supabase } from '../lib/supabase'
 
 export default function DetailPage() {
   const { slug } = useParams<{ slug: string }>()
   const navigate = useNavigate()
-  const [callout, setCallout] = useState<Callout | null>(null)
+  const [callout, setCallout] = useState<any>(null)
+  const [htmlContent, setHtmlContent] = useState<string | null>(null)
 
   useEffect(() => {
-    const foundCallout = callouts.find(c => c.slug === slug)
-    if (!foundCallout) {
-      navigate('/')
-      return
+    const fetchCalloutData = async () => {
+      try {
+        // Lade Callout-Daten
+        const { data: calloutData, error: calloutError } = await supabase
+          .from('callouts')
+          .select('*')
+          .eq('slug', slug)
+          .single()
+
+        if (calloutError) throw calloutError
+
+        // Lade HTML-Content
+        const { data: htmlData, error: htmlError } = await supabase
+          .from('calloutshtml')
+          .select('html_content')
+          .eq('slug', slug)
+          .single()
+
+        if (htmlError && !htmlError.message.includes('after')) {
+          console.error("HTML Content error:", htmlError)
+        }
+
+        setCallout(calloutData)
+        setHtmlContent(htmlData?.html_content || null)
+      } catch (error) {
+        console.error('Error fetching data:', error)
+        navigate('/')
+      }
     }
-    setCallout(foundCallout)
+
+    fetchCalloutData()
   }, [slug, navigate])
 
-  if (!callout) {
-    return null
-  }
+  if (!callout) return null
 
   const containerVariants = {
     hidden: { opacity: 0, y: 20 },
@@ -48,17 +72,6 @@ export default function DetailPage() {
         initial="hidden"
         animate="visible"
       >
-        {/* Hero section */}
-        <div className="relative px-6 lg:px-8">
-          <div className="mx-auto max-w-2xl text-center">
-            <h1 className="text-4xl font-bold tracking-tight text-white sm:text-6xl">
-              {callout.pageContent.title}
-            </h1>
-            <p className="mt-6 text-lg leading-8 text-gray-300">
-              {callout.pageContent.subtitle}
-            </p>
-          </div>
-        </div>
 
         {/* Content section */}
         <motion.div
@@ -67,58 +80,20 @@ export default function DetailPage() {
         >
           <div className="mx-auto max-w-3xl">
             {/* Main Image */}
-            {callout.pageContent.imagePath && (
-              <div className="mb-12">
-                <img
-                  src={callout.pageContent.imagePath}
-                  alt={callout.pageContent.imageAlt}
-                  className="w-full rounded-lg shadow-lg"
-                />
-              </div>
-            )}
+            <div className="mb-12">
+              <img
 
-            {/* Content Blocks */}
-            <div className="prose prose-lg prose-indigo mx-auto dark:prose-invert">
-              {callout.pageContent.content.map((block, index) => {
-                switch (block.type) {
-                  case 'paragraph':
-                    return (
-                      <p key={index} className="text-gray-300 dark:text-gray-300">
-                        {block.text}
-                      </p>
-                    )
-                  case 'heading':
-                    return (
-                      <h2 key={index} className="text-2xl font-bold text-gray-300 dark:text-white mt-8 mb-4">
-                        {block.text}
-                      </h2>
-                    )
-                  case 'list':
-                    return (
-                      <ul key={index} className="list-disc list-inside space-y-2 text-gray-300 dark:text-gray-300">
-                        {block.items?.map((item, itemIndex) => (
-                          <li key={itemIndex}>{item}</li>
-                        ))}
-                      </ul>
-                    )
-                  default:
-                    return null
-                }
-              })}
+                className="w-full rounded-lg shadow-lg"
+              />
             </div>
 
-            {/* Call to Action Button */}
-            {callout.pageContent.button && (
-              <div className="mt-12 text-center">
-                <a
-                  href={callout.pageContent.button.link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-8 py-3 text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700 rounded-md shadow-sm transition-colors duration-200"
-                >
-                  <span className="text-white">{callout.pageContent.button.text}</span>
-                  <ArrowTopRightOnSquareIcon className="h-5 w-5 text-white" />
-                </a>
+            {/* HTML Content Section */}
+            {htmlContent && (
+              <div className="mt-8 p-6 bg-gray-800/50 rounded-md">
+                <div
+                  className="prose prose-lg prose-invert mx-auto"
+                  dangerouslySetInnerHTML={{ __html: htmlContent }}
+                />
               </div>
             )}
           </div>

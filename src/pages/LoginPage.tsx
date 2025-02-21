@@ -1,139 +1,154 @@
-// import { useState } from 'react';
-// import { useNavigate } from 'react-router-dom';
-// import { supabase } from '../../lib/supabase';
-// import { usePageTitle } from '../hooks/usePageTitle';
+"use client";
+import React, { useEffect, useState } from "react";
+import { Label } from "../components/ui/label";
+import { Input } from "../components/ui/input";
+import { cn } from "@/lib/utils";
+import {
+    IconBrandGithub,
+    IconBrandGoogle,
+} from "@tabler/icons-react";
 
-// const ADMIN_EMAIL = import.meta.env.VITE_ADMIN_EMAIL;
+interface FormData {
+    firstname: string;
+    lastname: string;
+    email: string;
+}
 
-// const LoginPage = () => {
-//   usePageTitle('Login');
-//   const navigate = useNavigate();
-//   const [email, setEmail] = useState('');
-//   const [password, setPassword] = useState('');
-//   const [loading, setLoading] = useState(false);
-//   const [message, setMessage] = useState('');
+export default function SignupFormDemo() {
+    const [formData, setFormData] = useState<FormData>({
+        firstname: '',
+        lastname: '',
+        email: ''
+    });
 
-//   const handleLogin = async (e: React.FormEvent) => {
-//     e.preventDefault();
-//     try {
-//       setLoading(true);
-//       setMessage('');
+    // Load saved data when component mounts
+    useEffect(() => {
+        const savedData = localStorage.getItem('signupFormData');
+        if (savedData) {
+            setFormData(JSON.parse(savedData));
+        }
+    }, []);
 
-//       const { data, error } = await supabase.auth.signInWithPassword({
-//         email,
-//         password,
-//       });
+    // Save form data whenever it changes
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { id, value } = e.target;
+        const newFormData = { ...formData, [id]: value };
+        setFormData(newFormData);
+        localStorage.setItem('signupFormData', JSON.stringify(newFormData));
+    };
 
-//       if (error) throw error;
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        console.log("Form submitted", formData);
+        // After successful submission, you might want to clear the stored data
+        // localStorage.removeItem('signupFormData');
+    };
 
-//       if (data.user) {
-//         if (data.user.email === ADMIN_EMAIL) {
-//           navigate('/admin');
-//         } else {
-//           throw new Error('Sie haben keine Berechtigung für den Admin-Bereich.');
-//         }
-//       }
-//     } catch (error: any) {
-//       setMessage(error.message || 'Ein Fehler ist aufgetreten');
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
+    return (
+        <div className="max-w-md w-full mx-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input bg-white dark:bg-black mt-10">
+            <h2 className="font-bold text-xl text-neutral-800 dark:text-neutral-200">
+                Wilkommen
+            </h2>
+            <p className="text-neutral-600 text-sm max-w-sm mt-2 dark:text-neutral-300">
+                Log dich ein oder erstelle ein neues Konto
+            </p>
 
-//   const handleSignUp = async (e: React.FormEvent) => {
-//     e.preventDefault();
-//     try {
-//       setLoading(true);
-//       setMessage('');
+            <form className="my-8" onSubmit={handleSubmit}>
+                <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2 mb-4">
+                    <LabelInputContainer>
+                        <Label htmlFor="firstname">First name</Label>
+                        <Input
+                            id="firstname"
+                            placeholder="Max"
+                            type="text"
+                            value={formData.firstname}
+                            onChange={handleInputChange}
+                        />
+                    </LabelInputContainer>
+                    <LabelInputContainer>
+                        <Label htmlFor="lastname">Last name</Label>
+                        <Input
+                            id="lastname"
+                            placeholder="Mustermann"
+                            type="text"
+                            value={formData.lastname}
+                            onChange={handleInputChange}
+                        />
+                    </LabelInputContainer>
+                </div>
+                <LabelInputContainer className="mb-4">
+                    <Label htmlFor="email">Email Address</Label>
+                    <Input
+                        id="email"
+                        placeholder="maxmustermann@gmail.com"
+                        type="email"
+                        value={formData.email}
+                        onChange={handleInputChange}
+                    />
+                </LabelInputContainer>
+                <LabelInputContainer className="mb-4">
+                    <Label htmlFor="password">Password</Label>
+                    <Input id="password" placeholder="••••••••" type="password" />
+                </LabelInputContainer>
 
-//       if (email !== ADMIN_EMAIL) {
-//         throw new Error('Nur der Administrator kann sich registrieren.');
-//       }
 
-//       const { error } = await supabase.auth.signUp({
-//         email,
-//         password,
-//       });
+                <button
+                    className="bg-gradient-to-br relative group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]"
+                    type="submit"
+                >
+                    Sign up &rarr;
+                    <BottomGradient />
+                </button>
 
-//       if (error) throw error;
+                <div className="bg-gradient-to-r from-transparent via-neutral-300 dark:via-neutral-700 to-transparent my-8 h-[1px] w-full" />
 
-//       setMessage('Registrierung erfolgreich! Sie können sich jetzt einloggen.');
-//     } catch (error: any) {
-//       setMessage(error.message || 'Ein Fehler ist aufgetreten');
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
+                <div className="flex flex-col space-y-4">
+                    <button
+                        className=" relative group/btn flex space-x-2 items-center justify-start px-4 w-full text-black rounded-md h-10 font-medium shadow-input bg-gray-50 dark:bg-zinc-900 dark:shadow-[0px_0px_1px_1px_var(--neutral-800)]"
+                        type="submit"
+                    >
+                        <IconBrandGithub className="h-4 w-4 text-neutral-800 dark:text-neutral-300" />
+                        <span className="text-neutral-700 dark:text-neutral-300 text-sm">
+                            GitHub
+                        </span>
+                        <BottomGradient />
+                    </button>
+                    <button
+                        className=" relative group/btn flex space-x-2 items-center justify-start px-4 w-full text-black rounded-md h-10 font-medium shadow-input bg-gray-50 dark:bg-zinc-900 dark:shadow-[0px_0px_1px_1px_var(--neutral-800)]"
+                        type="submit"
+                    >
+                        <IconBrandGoogle className="h-4 w-4 text-neutral-800 dark:text-neutral-300" />
+                        <span className="text-neutral-700 dark:text-neutral-300 text-sm">
+                            Google
+                        </span>
+                        <BottomGradient />
+                    </button>
 
-//   return (
-//     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-//       <div className="max-w-md w-full space-y-8">
-//         <div>
-//           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-//             Admin-Bereich
-//           </h2>
-//         </div>
-//         <form className="mt-8 space-y-6" onSubmit={handleLogin}>
-//           <div className="rounded-md shadow-sm -space-y-px">
-//             <div>
-//               <label htmlFor="email" className="sr-only">
-//                 E-Mail Adresse
-//               </label>
-//               <input
-//                 id="email"
-//                 name="email"
-//                 type="email"
-//                 required
-//                 value={email}
-//                 onChange={(e) => setEmail(e.target.value)}
-//                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-//                 placeholder="E-Mail Adresse"
-//               />
-//             </div>
-//             <div>
-//               <label htmlFor="password" className="sr-only">
-//                 Passwort
-//               </label>
-//               <input
-//                 id="password"
-//                 name="password"
-//                 type="password"
-//                 required
-//                 value={password}
-//                 onChange={(e) => setPassword(e.target.value)}
-//                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-//                 placeholder="Passwort"
-//               />
-//             </div>
-//           </div>
+                </div>
+            </form>
+        </div>
+    );
+}
 
-//           <div className="flex gap-4">
-//             <button
-//               type="submit"
-//               disabled={loading}
-//               className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-blue-300"
-//             >
-//               {loading ? 'Wird geladen...' : 'Einloggen'}
-//             </button>
-//             <button
-//               type="button"
-//               onClick={handleSignUp}
-//               disabled={loading}
-//               className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:bg-green-300"
-//             >
-//               {loading ? 'Wird geladen...' : 'Registrieren'}
-//             </button>
-//           </div>
-//         </form>
+const BottomGradient = () => {
+    return (
+        <>
+            <span className="group-hover/btn:opacity-100 block transition duration-500 opacity-0 absolute h-px w-full -bottom-px inset-x-0 bg-gradient-to-r from-transparent via-cyan-500 to-transparent" />
+            <span className="group-hover/btn:opacity-100 blur-sm block transition duration-500 opacity-0 absolute h-px w-1/2 mx-auto -bottom-px inset-x-10 bg-gradient-to-r from-transparent via-indigo-500 to-transparent" />
+        </>
+    );
+};
 
-//         {message && (
-//           <div className={`mt-4 p-4 rounded ${message.includes('erfolgreich') ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-//             {message}
-//           </div>
-//         )}
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default LoginPage;
+const LabelInputContainer = ({
+    children,
+    className,
+}: {
+    children: React.ReactNode;
+    className?: string;
+}) => {
+    return (
+        <div className={cn("flex flex-col space-y-2 w-full", className)}>
+            {children}
+        </div>
+    );
+};

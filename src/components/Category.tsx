@@ -4,10 +4,10 @@ import { useState, useEffect } from 'react'
 import { useFilter } from '../context/FilterContext'
 import HeroSection from './HeroSection'
 import { BlurFade } from "@/registry/magicui/blur-fade";
-import { callouts } from '../data/callouts'
 import FluidTabs from './animata/fluid-tabs'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { Particles } from '@/registry/magicui/particles'
+import { supabase } from '../lib/supabase'
 
 const ITEMS_PER_PAGE = 12;
 
@@ -36,17 +36,46 @@ const getImageSrc = (imageSrc: string) => {
 export default function Category() {
   const [currentPage, setCurrentPage] = useState(1);
   const { activeFilter } = useFilter();
+  const [dbCallouts, setDbCallouts] = useState<any[]>([]);
 
-  // Filter callouts based on active filter
-  const filteredCallouts = activeFilter === 'all'
-    ? callouts
-    : callouts.filter(callout => callout.category === activeFilter);
+  // useEffect: Lade Callouts aus der Tabelle 'callouts' und dann für jedes separat den HTML-Inhalt aus 'calloutshtml'
+  useEffect(() => {
+    const fetchCalloutsFromDB = async () => {
+      // Hole alle Callouts (ohne Join)
+      const query = activeFilter === 'all'
+        ? supabase.from('callouts').select('*')
+        : supabase.from('callouts').select('*').eq('category', activeFilter);
+      const { data, error } = await query;
+      if (error) {
+        console.error("Fehler beim Laden der Callouts:", error);
+        return;
+      }
+      // Für jedes Callout: hole den HTML-Inhalt via .single() wie in EditCalloutDetailPage
+      const enrichedCallouts = await Promise.all(
+        data.map(async (callout: any) => {
+          const { data: htmlData, error: htmlError } = await supabase
+            .from('calloutshtml')
+            .select('html_content, slug_suffix')
+            .eq('slug', callout.slug)
+            .single();
+          if (htmlError) {
+            console.error("Fehler beim Laden des HTML-Inhalts für slug", callout.slug, htmlError);
+            return { ...callout, html_content: null };
+          }
+          return { ...callout, html_content: htmlData?.html_content || null };
+        })
+      );
+      console.log("Callouts Daten aus DB:", enrichedCallouts);
+      setDbCallouts(enrichedCallouts);
+    };
+    fetchCalloutsFromDB();
+  }, [activeFilter]);
 
-  // Calculate pagination based on filtered items
-  const totalPages = Math.ceil(filteredCallouts.length / ITEMS_PER_PAGE);
+  // Berechne Pagination basierend auf den geladenen dbCallouts:
+  const totalPages = Math.ceil(dbCallouts.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const endIndex = startIndex + ITEMS_PER_PAGE;
-  const currentCallouts = filteredCallouts.slice(startIndex, endIndex);
+  const currentCallouts = dbCallouts.slice(startIndex, endIndex);
 
   // Reset to first page when filter changes
   useEffect(() => {
@@ -93,8 +122,8 @@ export default function Category() {
                   >
                     <div className="relative h-80 w-full overflow-hidden rounded-lg bg-white sm:aspect-h-1 sm:aspect-w-2 lg:aspect-h-1 lg:aspect-w-1 group-hover:opacity-75 dark:bg-gray-800">
                       <img
-                        src={getImageSrc(callout.imageSrc)}
-                        alt={callout.imageAlt}
+                        src={getImageSrc(callout.image_src)}
+                        alt={callout.image_alt}
                         className="h-full w-full object-cover object-center"
                         onError={(e) => {
                           const img = e.target as HTMLImageElement;

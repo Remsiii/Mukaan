@@ -28,6 +28,7 @@ export interface Callout {
   slug: string;
   category: 'tipps' | 'pc' | 'angebote' | 'apps';  // neue Zeile
   pageContent: PageContent;
+  html_content?: string | null; // Neu hinzugefügt
 }
 
 export const callouts: Callout[] = [

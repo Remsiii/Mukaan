@@ -8,7 +8,6 @@ import LoadingScreen from "./components/LoadingScreen";
 import DetailPage from "./pages/[slug]";
 import { PCScreen, AppsScreen } from "./components/PlaceholderPages";
 import { usePageTitle } from "./hooks/usePageTitle";
-import TikTokScreen from "./components/TikTokScreen";
 import TipsPage from "./pages/TipsPage";
 import AngebotePage from "./pages/AngebotePage";
 import Impressum from './pages/Impressum';
@@ -16,6 +15,10 @@ import Datenschutz from './pages/Datenschutz';
 import FixedNavCard from "./components/Fixed-Nav-Card";
 import DealsPage from "./app/deals/page";
 import { FilterProvider } from './context/FilterContext';
+import LoginPage from "./pages/LoginPage";
+import AdminPage from "./pages/Admin/AdminPage";
+import EditCalloutPage from "./pages/Admin/EditCalloutPage";
+import EditCalloutDetailPage from "./pages/Admin/EditCalloutDetailPage";
 
 // Wrap Category with title management
 const Home = () => {
@@ -49,17 +52,16 @@ function App() {
 
                 <Route path="/angebote" element={<AngebotePage />} />
                 <Route path="/:slug" element={<DetailPage />} />
-                <Route path="/tiktok" element={<TikTokScreen />} />
                 <Route path="/impressum" element={<Impressum />} />
                 <Route path="/datenschutz" element={<Datenschutz />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
 
-
-                {/* <Route path="/admin" element={<AdminPage />} />
-                <Route path="/admin/edit/:id" element={<EditCalloutPage />} />
-                <Route path="/admin/edit-category" element={<EditableCategory />} />
                 <Route path="/login" element={<LoginPage />} />
-                <Route path="/:slug/edit" element={<EditablePageContent />} /> */}
+                <Route path="/admin" element={<AdminPage />} />
+                <Route path="/admin/edit/:id" element={<EditCalloutPage />} />
+                <Route path="/:slug/edit" element={<EditCalloutDetailPage />} />
+
+
               </Routes>
             </AnimatePresence>
           </main>
