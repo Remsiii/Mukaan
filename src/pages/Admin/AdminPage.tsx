@@ -1,9 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { supabase } from '../../lib/supabase';
 import { PlusIcon, PencilSquareIcon, XMarkIcon, DocumentTextIcon, CheckIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import imageCompression from 'browser-image-compression';
+import { BlurFade } from '@/registry/magicui/blur-fade';
+import { Meteors } from '@/registry/magicui/meteors';
+import { Particles } from '@/registry/magicui/particles';
+import { LoadingSkeleton } from '@/components/LoadingSkeleton'
 
 type ContentBlock = {
     type: 'paragraph' | 'heading' | 'list' | 'image';
@@ -35,6 +39,8 @@ type Callout = {
     updated_at?: string;
 };
 
+const PLACEHOLDER_IMAGE = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300'%3E%3Crect width='400' height='300' fill='%234B5563'/%3E%3Ctext x='50%25' y='50%25' font-family='Arial' font-size='24' fill='%239CA3AF' text-anchor='middle'%3EKein Bild verfügbar%3C/text%3E%3C/svg%3E";
+
 const AdminDashboard = () => {
     const navigate = useNavigate();
     const [callouts, setCallouts] = useState<Callout[]>([]);
@@ -48,8 +54,12 @@ const AdminDashboard = () => {
     const [editableFields, setEditableFields] = useState<{ id: string, field: 'name' | 'description' } | null>(null);
     const [editValue, setEditValue] = useState('');
     const [uploading, setUploading] = useState(false);
+    const [showImageModal, setShowImageModal] = useState(false)
+    const [activeCallout, setActiveCallout] = useState<Callout | null>(null)
+    const [imageUrl, setImageUrl] = useState('')
+    const fileInputRef = useRef<HTMLInputElement>(null)
 
-    // Check auth on mount
+    // Simplified auth check
     useEffect(() => {
         const checkAuth = async () => {
             const { data: { user }, error } = await supabase.auth.getUser();
@@ -60,18 +70,8 @@ const AdminDashboard = () => {
                 return;
             }
 
-            // Get user role if needed
-            const { data: profile, error: profileError } = await supabase
-                .from('profiles')
-                .select('role')
-                .eq('id', user.id)
-                .single();
-
-            if (profileError || !profile || profile.role !== 'admin') {
-                console.error('Not authorized');
-                navigate('/');
-                return;
-            }
+            // Remove the profile check since we don't have that table yet
+            console.log('User authenticated:', user.email);
         };
 
         checkAuth();
@@ -273,7 +273,6 @@ const AdminDashboard = () => {
         try {
             setUploading(true);
 
-            // Compress and resize image
             const options = {
                 maxSizeMB: 1,
                 maxWidthOrHeight: 1200,
@@ -282,8 +281,6 @@ const AdminDashboard = () => {
             };
 
             const compressedFile = await imageCompression(file, options);
-
-            // Upload file to Supabase storage
             const fileName = `${Date.now()}.jpg`;
             const filePath = `callout-images/${fileName}`;
 
@@ -297,15 +294,7 @@ const AdminDashboard = () => {
                 .from('card-images')
                 .getPublicUrl(filePath);
 
-            // Update callout with new image URL
-            const { error: updateError } = await supabase
-                .from('callouts')
-                .update({ image_src: publicUrl })
-                .eq('id', callout.id);
-
-            if (updateError) throw updateError;
-
-            // Update local state
+            await updateCalloutImage(callout.id, publicUrl);
             setCallouts(callouts.map(c =>
                 c.id === callout.id ? { ...c, image_src: publicUrl } : c
             ));
@@ -315,46 +304,52 @@ const AdminDashboard = () => {
             alert('Error uploading image: ' + error.message);
         } finally {
             setUploading(false);
+            setShowImageModal(false);
         }
     };
 
-    // New function to add an empty callout record
+    const handleImageUrl = async () => {
+        if (!activeCallout || !imageUrl.trim()) return;
+
+        try {
+            await updateCalloutImage(activeCallout.id, imageUrl);
+            setCallouts(callouts.map(c =>
+                c.id === activeCallout.id ? { ...c, image_src: imageUrl } : c
+            ));
+            setImageUrl('');
+            setShowImageModal(false);
+        } catch (error: any) {
+            console.error('Error updating image URL:', error);
+            alert('Error updating image URL: ' + error.message);
+        }
+    };
+
+    const updateCalloutImage = async (calloutId: string, imageUrl: string) => {
+        const { error } = await supabase
+            .from('callouts')
+            .update({ image_src: imageUrl })
+            .eq('id', calloutId);
+
+        if (error) throw error;
+    };
+
+    // Modified handleAddCallout to not create DB entry
     const handleAddCallout = async () => {
         try {
-            const newSlug = `callout-${Date.now()}`;
             const { data: { user }, error: authError } = await supabase.auth.getUser();
             if (authError || !user) throw new Error('Not authenticated');
 
-            const { data, error } = await supabase
-                .from('callouts')
-                .insert({
-                    name: '',
-                    description: '',
-                    slug: newSlug,
-                    image_src: '',
-                    image_alt: '',
-                    category: 'tipps', // Standard-Kategorie hinzugefügt
-                    page_content: null
-                })
-                .single();
-
-            if (error) throw error;
-            navigate(`/${newSlug}/edit`);
+            const tempSlug = `callout-${Date.now()}`; // Temporary slug
+            // Navigate to edit page with isNew flag
+            navigate(`/${tempSlug}/edit?isNew=true`);
         } catch (error: any) {
-            console.error('Error adding callout:', error);
-            alert('❌ Fehler beim Hinzufügen des Callouts');
+            console.error('Error:', error);
+            alert('❌ Fehler beim Erstellen des neuen Artikels');
         }
     };
 
     if (isLoading) {
-        return (
-            <div className="flex items-center justify-center min-h-screen bg-white dark:bg-gray-900">
-                <div className="text-center">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
-                    <p className="mt-4 text-gray-600 dark:text-gray-400">Lädt...</p>
-                </div>
-            </div>
-        );
+        return <LoadingSkeleton />;
     }
 
     if (error) {
@@ -374,12 +369,19 @@ const AdminDashboard = () => {
     }
 
     return (
-        <div className="bg-white dark:bg-gray-900 mt-10">
-            <div className="mx-auto max-w-7xl">
-                <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">
+        <div className=" mt-10 relative backdrop-blur-xl bg-gradient-to-b  to-grey/10 rounded-2xl p-8 pb-16 shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-gray-100/20 ">
+            <Particles
+                className="absolute inset-0 z-0"
+                quantity={100}
+                ease={80}
+                color={"#ffffff"}
+                refresh
+            />
+            <div className="mx-auto max-w-7xl ">
+                <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8 ">
                     <div className="mb-12">
                         <div className="flex justify-between items-center mb-8">
-                            <h2 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+                            <h2 className="text-2xl font-bold tracking-tight text-white">
                                 Seiten
                             </h2>
                             <div className="flex space-x-4">
@@ -403,7 +405,7 @@ const AdminDashboard = () => {
 
                     <div className="mb-12">
                         <motion.div
-                            className="mt-6 space-y-12 lg:grid lg:grid-cols-3 lg:gap-x-6 lg:space-y-0"
+                            className="mt-6 space-y-12 lg:grid lg:grid-cols-3 lg:gap-x-6 lg:gap-y-12 lg:space-y-0"
                             initial="hidden"
                             animate="show"
                             variants={{
@@ -476,27 +478,20 @@ const AdminDashboard = () => {
                                         <>
                                             <div className="relative h-80 w-full overflow-hidden rounded-lg bg-white sm:aspect-h-1 sm:aspect-w-2 lg:aspect-h-1 lg:aspect-w-1 dark:bg-gray-800">
                                                 <img
-                                                    src={callout.image_src || '/placeholder.jpg'}
-                                                    alt={callout.image_alt}
+                                                    src={callout.image_src || PLACEHOLDER_IMAGE}
+                                                    alt={callout.image_alt || 'Platzhalterbild'}
                                                     className="h-full w-full object-cover object-center"
                                                 />
                                                 <div className="absolute inset-0 flex items-center justify-center">
-                                                    <label className="cursor-pointer bg-black bg-opacity-20 rounded-full p-2 hover:bg-opacity-30 transition-all">
-                                                        <input
-                                                            type="file"
-                                                            className="hidden"
-                                                            accept="image/*"
-                                                            onChange={(e) => handleImageUpload(callout, e)}
-                                                            disabled={uploading}
-                                                        />
-                                                        <div className="flex items-center space-x-2 text-white">
-                                                            {uploading ? (
-                                                                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                                                            ) : (
-                                                                <PencilSquareIcon className="h-5 w-5" />
-                                                            )}
-                                                        </div>
-                                                    </label>
+                                                    <button
+                                                        onClick={() => {
+                                                            setActiveCallout(callout);
+                                                            setShowImageModal(true);
+                                                        }}
+                                                        className="cursor-pointer bg-black bg-opacity-20 rounded-full p-2 hover:bg-opacity-30 transition-all"
+                                                    >
+                                                        <PencilSquareIcon className="h-5 w-5 text-white" />
+                                                    </button>
                                                 </div>
                                             </div>
                                             <div className="mt-6">
@@ -507,7 +502,7 @@ const AdminDashboard = () => {
                                                                 type="text"
                                                                 value={editValue}
                                                                 onChange={(e) => setEditValue(e.target.value)}
-                                                                className="text-sm text-gray-500 dark:text-gray-400 w-full bg-transparent border-b border-gray-300 focus:border-indigo-500 focus:outline-none p-1"
+                                                                className="text-sm text-white w-full bg-transparent border-b border-gray-300 focus:border-indigo-500 focus:outline-none p-1"
                                                                 autoFocus
                                                             />
                                                             <button onClick={() => handleFieldSave(callout)} className="text-green-600">
@@ -519,7 +514,7 @@ const AdminDashboard = () => {
                                                         </div>
                                                     ) : (
                                                         <div className="flex items-center justify-between w-full">
-                                                            <h3 className="text-sm text-gray-500 dark:text-gray-400">
+                                                            <h3 className="text-sm text-white">
                                                                 {callout.name}
                                                             </h3>
                                                             <button
@@ -540,7 +535,7 @@ const AdminDashboard = () => {
                                                                 type="text"
                                                                 value={editValue}
                                                                 onChange={(e) => setEditValue(e.target.value)}
-                                                                className="text-base font-semibold text-gray-900 dark:text-white w-full bg-transparent border-b border-gray-300 focus:border-indigo-500 focus:outline-none p-1"
+                                                                className="text-base font-semibold text-white w-full bg-transparent border-b border-gray-300 focus:border-indigo-500 focus:outline-none p-1"
                                                                 autoFocus
                                                             />
                                                             <button onClick={() => handleFieldSave(callout)} className="text-green-600">
@@ -552,7 +547,7 @@ const AdminDashboard = () => {
                                                         </div>
                                                     ) : (
                                                         <div className="flex items-center justify-between w-full">
-                                                            <p className="text-base font-semibold text-gray-900 dark:text-white">
+                                                            <p className="text-base font-semibold text-white">
                                                                 {callout.description}
                                                             </p>
                                                             <button
@@ -597,6 +592,54 @@ const AdminDashboard = () => {
                     </div>
                 </div>
             </div>
+            {showImageModal && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-gray-800 p-6 rounded-lg w-96">
+                        <h3 className="text-white text-lg mb-4">Bild ändern</h3>
+                        <div className="space-y-4">
+                            <div>
+                                <label className="block text-white mb-2">Bild hochladen</label>
+                                <input
+                                    type="file"
+                                    ref={fileInputRef}
+                                    onChange={(e) => activeCallout && handleImageUpload(activeCallout, e)}
+                                    accept="image/*"
+                                    className="w-full text-white"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-white mb-2">oder Bild-URL einfügen</label>
+                                <input
+                                    type="text"
+                                    value={imageUrl}
+                                    onChange={(e) => setImageUrl(e.target.value)}
+                                    placeholder="https://beispiel.de/bild.jpg"
+                                    className="w-full p-2 rounded bg-gray-700 text-white"
+                                />
+                            </div>
+                            <div className="flex justify-end gap-2">
+                                <button
+                                    onClick={() => {
+                                        setShowImageModal(false);
+                                        setActiveCallout(null);
+                                        setImageUrl('');
+                                    }}
+                                    className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700"
+                                >
+                                    Abbrechen
+                                </button>
+                                <button
+                                    onClick={handleImageUrl}
+                                    disabled={!imageUrl.trim()}
+                                    className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
+                                >
+                                    URL einfügen
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

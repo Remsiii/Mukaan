@@ -58,7 +58,7 @@ export default function DetailPage() {
   }
 
   return (
-    <div className="mt-10 border border-gray-200/20 rounded-xl">
+    <div className="mt-10 border border-gray-200/20 rounded-xl overflow-x-hidden">
       <Particles
         className="absolute inset-0 z-0"
         quantity={100}
@@ -75,10 +75,10 @@ export default function DetailPage() {
 
         {/* Content section */}
         <motion.div
-          className="relative px-6 lg:px-8 mt-12"
+          className="relative px-4 sm:px-6 lg:px-8 mt-12"
           variants={contentVariants}
         >
-          <div className="mx-auto max-w-3xl">
+          <div className="mx-auto max-w-3xl overflow-hidden">
             {/* Main Image */}
             <div className="mb-12">
               <img
@@ -89,9 +89,15 @@ export default function DetailPage() {
 
             {/* HTML Content Section */}
             {htmlContent && (
-              <div className="mt-8 p-6 bg-gray-800/50 rounded-md">
+              <div className="mt-8 p-4 sm:p-6 bg-gray-800/50 rounded-md overflow-hidden">
                 <div
-                  className="prose prose-lg prose-invert mx-auto"
+                  className="prose prose-lg prose-invert mx-auto break-words"
+                  style={{
+                    maxWidth: '100%',
+                    overflowWrap: 'break-word',
+                    wordWrap: 'break-word',
+                    wordBreak: 'break-word',
+                  }}
                   dangerouslySetInnerHTML={{ __html: htmlContent }}
                 />
               </div>

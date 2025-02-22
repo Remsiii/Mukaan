@@ -41,16 +41,18 @@ export default function Category() {
   // useEffect: Lade Callouts aus der Tabelle 'callouts' und dann für jedes separat den HTML-Inhalt aus 'calloutshtml'
   useEffect(() => {
     const fetchCalloutsFromDB = async () => {
-      // Hole alle Callouts (ohne Join)
+      // Hole alle Callouts mit created_at
       const query = activeFilter === 'all'
-        ? supabase.from('callouts').select('*')
-        : supabase.from('callouts').select('*').eq('category', activeFilter);
+        ? supabase.from('callouts').select('*, created_at')
+        : supabase.from('callouts').select('*, created_at').eq('category', activeFilter);
+
       const { data, error } = await query;
       if (error) {
         console.error("Fehler beim Laden der Callouts:", error);
         return;
       }
-      // Für jedes Callout: hole den HTML-Inhalt via .single() wie in EditCalloutDetailPage
+
+      // Für jedes Callout: hole den HTML-Inhalt
       const enrichedCallouts = await Promise.all(
         data.map(async (callout: any) => {
           const { data: htmlData, error: htmlError } = await supabase
@@ -62,11 +64,21 @@ export default function Category() {
             console.error("Fehler beim Laden des HTML-Inhalts für slug", callout.slug, htmlError);
             return { ...callout, html_content: null };
           }
-          return { ...callout, html_content: htmlData?.html_content || null };
+          return {
+            ...callout,
+            html_content: htmlData?.html_content || null
+          };
         })
       );
-      console.log("Callouts Daten aus DB:", enrichedCallouts);
-      setDbCallouts(enrichedCallouts);
+
+      // Sortiere nach created_at, neueste zuerst
+      const sortedCallouts = enrichedCallouts
+        .filter(callout => callout.created_at)
+        .sort((a, b) => {
+          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+        });
+
+      setDbCallouts(sortedCallouts);
     };
     fetchCalloutsFromDB();
   }, [activeFilter]);
@@ -90,13 +102,7 @@ export default function Category() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-2xl py-16 sm:py-24 lg:max-w-none lg:py-24">
           <div className="relative backdrop-blur-xl bg-gradient-to-b  to-grey/10 rounded-2xl p-8 pb-16 shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-gray-100/20 ">
-            <Particles
-              className="absolute inset-0 z-0"
-              quantity={100}
-              ease={80}
-              color={"#ffffff"}
-              refresh
-            />
+
             <motion.h2
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -105,11 +111,18 @@ export default function Category() {
             >
               Aktuelle Beiträge
             </motion.h2>
+            <Particles
+              className="absolute inset-0 z-0"
+              quantity={100}
+              ease={80}
+              color={"#ffffff"}
+              refresh
+            />
             <FluidTabs />
             <BlurFade>
 
               <motion.div
-                className="mt-12 space-y-12 lg:grid lg:grid-cols-3 lg:gap-x-6 lg:space-y-10"
+                className="mt-8 space-y-8 lg:grid lg:grid-cols-3 lg:gap-x-8 lg:space-y-0"
                 variants={containerVariants}
                 initial="hidden"
                 animate="show"

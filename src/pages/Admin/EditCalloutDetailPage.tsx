@@ -1,32 +1,8 @@
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { supabase } from '../../lib/supabase'
 import RichTextEditor from '../../components/RichTextEditor'
 import { GridIcon, LightbulbIcon, MonitorIcon, TagIcon, AppWindow } from "lucide-react";
-
-const DEFAULT_CONTENT = `
-<h1>👋 Willkommen zum neuen Artikel!</h1>
-<p>Hier kannst du deinen Artikel schreiben. Einige Beispiele für die Formatierung:</p>
-
-<h2>🎯 Überschriften</h2>
-<p>Nutze H1 für den Haupttitel und H2 für Untertitel.</p>
-
-<h2>📝 Aufzählungen</h2>
-<ul>
-  <li>Erster Punkt</li>
-  <li>Zweiter Punkt</li>
-  <li>Dritter Punkt</li>
-</ul>
-
-<h2>🖼️ Bilder</h2>
-<p>Füge Bilder über den Image-Button in der Toolbar ein.</p>
-<img src="https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=500" alt="Beispielbild" />
-
-<h2>🔗 Links</h2>
-<p>Verlinke auf andere Seiten mit dem Link-Button.</p>
-
-<p>Klicke auf "Save Content" um deinen Artikel zu speichern!</p>
-`
 
 const categories = [
     { id: "all", label: "Alle", icon: <GridIcon className="w-4 h-4" /> },
@@ -36,26 +12,36 @@ const categories = [
     { id: "apps", label: "Apps", icon: <AppWindow className="w-4 h-4" /> },
 ];
 
+const extractTitleFromHTML = (htmlContent: string): string => {
+    const match = htmlContent.match(/<h1[^>]*>(.*?)<\/h1>/);
+    return match ? match[1].trim() : '';
+};
+
 export default function EditCalloutDetailPage() {
     const { slug } = useParams<{ slug: string }>()
+    const [searchParams] = useSearchParams();
+    const isNew = searchParams.get('isNew') === 'true';
     const navigate = useNavigate()
-    const [content, setContent] = useState(DEFAULT_CONTENT)
+    const [content, setContent] = useState('')  // Changed to empty string
     const [loading, setLoading] = useState(true)
     const [slugSuffix, setSlugSuffix] = useState<number>(0)
-    const [selectedCategory, setSelectedCategory] = useState("all")
+    const [selectedCategory, setSelectedCategory] = useState("tipps") // Default category for new callouts
     const [title, setTitle] = useState("")
 
     useEffect(() => {
         const loadContent = async () => {
+            if (isNew) {
+                setLoading(false);
+                return;  // Don't set any initial content for new articles
+            }
+
             try {
-                // Lade HTML Content
                 const { data: htmlData } = await supabase
                     .from('calloutshtml')
                     .select('html_content, slug_suffix, title')
                     .eq('slug', slug)
                     .single()
 
-                // Lade Callout Daten für Kategorie
                 const { data: calloutData } = await supabase
                     .from('callouts')
                     .select('category')
@@ -65,36 +51,58 @@ export default function EditCalloutDetailPage() {
                 if (htmlData?.html_content) {
                     setContent(htmlData.html_content)
                     setSlugSuffix(htmlData.slug_suffix || 0)
-                    setTitle(htmlData.title || '')
+                    const extractedTitle = extractTitleFromHTML(htmlData.html_content);
+                    setTitle(extractedTitle || htmlData.title || '')
                 }
                 if (calloutData?.category) {
                     setSelectedCategory(calloutData.category)
                 }
             } catch (error) {
-                console.log('Kein existierender Content gefunden, verwende Default')
+                console.log('Kein existierender Content gefunden')
+                setTitle('')
             } finally {
                 setLoading(false)
             }
         }
         loadContent()
-    }, [slug])
+    }, [slug, isNew])
 
     const handleSave = async (newContent: string) => {
-        if (!title.trim()) {
+        const extractedTitle = extractTitleFromHTML(newContent);
+        const titleToSave = extractedTitle || title;
+
+        if (!titleToSave.trim()) {
             alert('❌ Bitte gib einen Titel ein')
             return
         }
 
         try {
-            // Check if callout exists
-            const { data: existingCallout } = await supabase
-                .from('callouts')
-                .select('id')
-                .eq('slug', slug)
-                .single()
+            if (isNew) {
+                // Create new callout
+                const { error: calloutError } = await supabase
+                    .from('callouts')
+                    .insert({
+                        slug,
+                        category: selectedCategory,
+                        name: titleToSave,
+                        description: '' // You might want to add a description field later
+                    });
 
-            if (existingCallout) {
-                // Update existing entries
+                if (calloutError) throw calloutError;
+
+                // Create HTML content
+                const { error: htmlError } = await supabase
+                    .from('calloutshtml')
+                    .insert({
+                        slug,
+                        html_content: newContent,
+                        updated_at: new Date().toISOString(),
+                        title: titleToSave
+                    });
+
+                if (htmlError) throw htmlError;
+            } else {
+                // Update existing callout
                 const { error: htmlError } = await supabase
                     .from('calloutshtml')
                     .upsert({
@@ -102,39 +110,20 @@ export default function EditCalloutDetailPage() {
                         html_content: newContent,
                         updated_at: new Date().toISOString(),
                         slug_suffix: slugSuffix,
-                        title: title.trim()
+                        title: titleToSave
                     }, { onConflict: 'slug' })
 
                 if (htmlError) throw htmlError
 
                 const { error: calloutError } = await supabase
                     .from('callouts')
-                    .update({ category: selectedCategory })
+                    .update({
+                        category: selectedCategory,
+                        name: titleToSave
+                    })
                     .eq('slug', slug)
 
                 if (calloutError) throw calloutError
-            } else {
-                // Create new entries
-                const { error: calloutError } = await supabase
-                    .from('callouts')
-                    .insert({
-                        slug,
-                        category: selectedCategory
-                    })
-
-                if (calloutError) throw calloutError
-
-                const { error: htmlError } = await supabase
-                    .from('calloutshtml')
-                    .insert({
-                        slug,
-                        html_content: newContent,
-                        updated_at: new Date().toISOString(),
-                        slug_suffix: slugSuffix,
-                        title: title.trim()
-                    })
-
-                if (htmlError) throw htmlError
             }
 
             navigate('/admin')
@@ -153,8 +142,8 @@ export default function EditCalloutDetailPage() {
     }
 
     return (
-        <div className="max-w-4xl mx-auto p-6">
-            <div className="flex justify-between items-center mb-6">
+        <div className="max-w-4xl mx-auto p-6 overflow-x-hidden">
+            <div className="flex justify-between items-center mb-6 mt-5">
                 <button
                     onClick={() => navigate('/admin')}
                     className="text-blue-500 hover:text-blue-600"
@@ -164,21 +153,6 @@ export default function EditCalloutDetailPage() {
                 <div className="text-sm text-gray-500">
                     Artikel-ID: {slug}{slugSuffix > 0 ? `-${slugSuffix}` : ''}
                 </div>
-            </div>
-
-            {/* Title Input */}
-            <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Titel
-                </label>
-                <input
-                    type="text"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                    placeholder="Artikel Titel eingeben..."
-                    required
-                />
             </div>
 
             {/* Kategorie-Auswahl */}
