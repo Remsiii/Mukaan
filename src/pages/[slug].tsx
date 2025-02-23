@@ -2,7 +2,6 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
 import { Particles } from '@/registry/magicui/particles'
-import { ArrowTopRightOnSquareIcon } from '@heroicons/react/24/outline'
 import { supabase } from '../lib/supabase'
 
 export default function DetailPage() {

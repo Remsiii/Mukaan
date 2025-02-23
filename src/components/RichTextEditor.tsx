@@ -10,7 +10,6 @@ import {
     Heading1Icon,
     Heading2Icon,
     ImageIcon,
-    LinkIcon,
     SmileIcon,
 } from 'lucide-react'
 
@@ -74,12 +73,17 @@ export default function RichTextEditor({ initialContent, onSave }: RichTextEdito
                 if (editor.getText().includes(PLACEHOLDER.heading)) {
                     editor.commands.setContent('<h1></h1><p></p>')
                 }
-                // Remove this event listener after first focus
                 editor.off('focus', handleFirstFocus)
             }
 
             editor.on('focus', handleFirstFocus)
-            return () => editor.off('focus', handleFirstFocus)
+
+            // Return a proper cleanup function
+            return () => {
+                if (editor) {
+                    editor.off('focus', handleFirstFocus)
+                }
+            }
         }
     }, [editor, initialContent])
 
@@ -158,17 +162,7 @@ export default function RichTextEditor({ initialContent, onSave }: RichTextEdito
                 >
                     <ImageIcon className="w-5 h-5" />
                 </button>
-                <button
-                    onClick={() => {
-                        const url = window.prompt('Enter URL')
-                        if (url) {
-                            editor.chain().focus().setLink({ href: url }).run()
-                        }
-                    }}
-                    className={`p-2 rounded ${editor.isActive('link') ? 'bg-gray-700' : ''}`}
-                >
-                    <LinkIcon className="w-5 h-5" />
-                </button>
+
                 <button
                     onClick={() => setShowEmojiPicker(!showEmojiPicker)}
                     className={`p-2 rounded hover:bg-gray-700`}

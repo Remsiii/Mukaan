@@ -66,7 +66,6 @@ const PasswordUpdateForm = React.memo(function PasswordUpdateForm({
     setCurrentPassword,
     newPassword,
     confirmPassword,
-    setNewPassword,
     setConfirmPassword,
     passwordStrength,
     handlePasswordChange,

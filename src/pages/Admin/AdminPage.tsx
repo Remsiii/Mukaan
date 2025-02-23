@@ -1,11 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { supabase } from '../../lib/supabase';
-import { PlusIcon, PencilSquareIcon, XMarkIcon, DocumentTextIcon, CheckIcon, TrashIcon, Cog6ToothIcon } from '@heroicons/react/24/outline';
+import { PlusIcon, PencilSquareIcon, XMarkIcon, CheckIcon, TrashIcon, Cog6ToothIcon } from '@heroicons/react/24/outline';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import imageCompression from 'browser-image-compression';
-import { BlurFade } from '@/registry/magicui/blur-fade';
-import { Meteors } from '@/registry/magicui/meteors';
 import { Particles } from '@/registry/magicui/particles';
 import { LoadingSkeleton } from '@/components/LoadingSkeleton'
 
@@ -39,11 +37,6 @@ type Callout = {
     updated_at?: string;
 };
 
-type User = {
-    id: string;
-    email: string | undefined;
-    created_at: string;
-};
 
 const PLACEHOLDER_IMAGE = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300'%3E%3Crect width='400' height='300' fill='%234B5563'/%3E%3Ctext x='50%25' y='50%25' font-family='Arial' font-size='24' fill='%239CA3AF' text-anchor='middle'%3EKein Bild verfügbar%3C/text%3E%3C/svg%3E";
 
@@ -52,11 +45,8 @@ const AdminDashboard = () => {
     const [callouts, setCallouts] = useState<Callout[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [isDeleting, setIsDeleting] = useState(false);
     const [editingId, setEditingId] = useState<string | null>(null);
     const [editedCallout, setEditedCallout] = useState<Callout | null>(null);
-    const [editingField, setEditingField] = useState<{ id: string, field: 'name' | 'description' | 'image_src' } | null>(null);
-    const [editedText, setEditedText] = useState('');
     const [editableFields, setEditableFields] = useState<{ id: string, field: 'name' | 'description' } | null>(null);
     const [editValue, setEditValue] = useState('');
     const [uploading, setUploading] = useState(false);
@@ -64,7 +54,6 @@ const AdminDashboard = () => {
     const [activeCallout, setActiveCallout] = useState<Callout | null>(null)
     const [imageUrl, setImageUrl] = useState('')
     const fileInputRef = useRef<HTMLInputElement>(null)
-    const [users, setUsers] = useState<User[]>([]);
 
     // Simplified auth check
     useEffect(() => {
@@ -118,24 +107,9 @@ const AdminDashboard = () => {
         loadCallouts();
     }, []);
 
-    const loadUsers = async () => {
-        try {
-            const { data: { user: currentUser } } = await supabase.auth.getUser();
-            if (!currentUser) return;
-
-            const { data, error } = await supabase.auth.admin.listUsers();
-            if (error) throw error;
-
-            setUsers(data.users || []);
-        } catch (error) {
-            console.error('Error loading users:', error);
-        }
-    };
 
     const handleDelete = async (callout: Callout) => {
-        setIsDeleting(true);
         try {
-            console.log('Deleting callout:', callout);
 
             // First try to delete the HTML content
             const { error: htmlError, data: htmlData } = await supabase
@@ -174,14 +148,7 @@ const AdminDashboard = () => {
         } catch (error: any) {
             console.error('Error in handleDelete:', error);
             alert('Fehler beim Löschen: ' + error.message);
-        } finally {
-            setIsDeleting(false);
         }
-    };
-
-    const handleEdit = (callout: Callout) => {
-        setEditingId(callout.id);
-        setEditedCallout({ ...callout });
     };
 
     const handleSave = async () => {
@@ -217,71 +184,6 @@ const AdminDashboard = () => {
         setEditedCallout(null);
     };
 
-    const handleInlineEdit = (callout: Callout, field: 'name' | 'description' | 'image_src') => {
-        setEditingField({ id: callout.id, field });
-        setEditedText(callout[field]);
-    };
-
-    const handleInlineSave = async (callout: Callout) => {
-        if (!editingField) return;
-
-        try {
-            const updates = {
-                [editingField.field]: editedText
-            };
-
-            const { error } = await supabase
-                .from('callouts')
-                .update(updates)
-                .eq('id', callout.id);
-
-            if (error) throw error;
-
-            setCallouts(callouts.map(c =>
-                c.id === callout.id ? { ...c, ...updates } : c
-            ));
-            setEditingField(null);
-        } catch (error: any) {
-            console.error('Error saving:', error);
-            alert('Error: ' + error.message);
-        }
-    };
-
-    const handleNameChange = async (callout: Callout, newName: string) => {
-        try {
-            const { error } = await supabase
-                .from('callouts')
-                .update({ name: newName })
-                .eq('id', callout.id);
-
-            if (error) throw error;
-
-            setCallouts(callouts.map(c =>
-                c.id === callout.id ? { ...c, name: newName } : c
-            ));
-        } catch (error: any) {
-            console.error('Error saving:', error);
-            alert('Error: ' + error.message);
-        }
-    };
-
-    const handleDescriptionChange = async (callout: Callout, newDescription: string) => {
-        try {
-            const { error } = await supabase
-                .from('callouts')
-                .update({ description: newDescription })
-                .eq('id', callout.id);
-
-            if (error) throw error;
-
-            setCallouts(callouts.map(c =>
-                c.id === callout.id ? { ...c, description: newDescription } : c
-            ));
-        } catch (error: any) {
-            console.error('Error saving:', error);
-            alert('Error: ' + error.message);
-        }
-    };
 
     const handleFieldEdit = (callout: Callout, field: 'name' | 'description') => {
         setEditableFields({ id: callout.id, field });
@@ -667,6 +569,7 @@ const AdminDashboard = () => {
                                     ref={fileInputRef}
                                     onChange={(e) => activeCallout && handleImageUpload(activeCallout, e)}
                                     accept="image/*"
+                                    disabled={uploading}
                                     className="w-full text-white"
                                 />
                             </div>
@@ -707,4 +610,5 @@ const AdminDashboard = () => {
     );
 };
 
+// Export the component properly
 export default AdminDashboard;
