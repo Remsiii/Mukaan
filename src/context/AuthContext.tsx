@@ -40,6 +40,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const login = async (username: string, password: string) => {
         try {
+            // Fetch the admin user from your secure table
             const { data: adminUser, error: adminError } = await supabase
                 .from('admin_users')
                 .select('*')
@@ -55,16 +56,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 throw new Error('Ungültiger Benutzername oder Passwort');
             }
 
-            // Sign in with Supabase using email/password
-            const { error: signInError } = await supabase.auth.signInWithPassword({
-                email: adminUser.email, // Make sure your admin_users table has an email field
-                password: password,
-            });
-
-            if (signInError) {
-                throw signInError;
-            }
-
+            // Manually set auth state without using Supabase signIn
             setIsAuthenticated(true);
             setUser(adminUser);
         } catch (error) {
