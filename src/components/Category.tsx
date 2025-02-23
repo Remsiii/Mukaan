@@ -33,14 +33,26 @@ const getImageSrc = (imageSrc: string) => {
   return imageSrc;
 };
 
+const CardSkeleton = () => (
+  <div className="group relative animate-pulse">
+    <div className="relative h-80 w-full overflow-hidden rounded-lg bg-gray-700">
+      <div className="h-full w-full" />
+    </div>
+    <div className="mt-6 h-4 w-3/4 rounded bg-gray-700" />
+    <div className="mt-2 h-4 w-1/2 rounded bg-gray-700" />
+  </div>
+);
+
 export default function Category() {
   const [currentPage, setCurrentPage] = useState(1);
   const { activeFilter } = useFilter();
   const [dbCallouts, setDbCallouts] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true); // Add loading state
 
   // useEffect: Lade Callouts aus der Tabelle 'callouts' und dann für jedes separat den HTML-Inhalt aus 'calloutshtml'
   useEffect(() => {
     const fetchCalloutsFromDB = async () => {
+      setIsLoading(true); // Start loading
       // Hole alle Callouts mit created_at
       const query = activeFilter === 'all'
         ? supabase.from('callouts').select('*, created_at')
@@ -60,6 +72,7 @@ export default function Category() {
         });
 
       setDbCallouts(sortedCallouts);
+      setIsLoading(false); // End loading
     };
     fetchCalloutsFromDB();
   }, [activeFilter]);
@@ -108,35 +121,43 @@ export default function Category() {
                 initial="hidden"
                 animate="show"
               >
-                {currentCallouts.map((callout) => (
-                  <motion.div
-                    key={callout.name}
-                    className="group relative"
-                    variants={itemVariants}
-                  >
-                    <div className="relative h-80 w-full overflow-hidden rounded-lg bg-white sm:aspect-h-1 sm:aspect-w-2 lg:aspect-h-1 lg:aspect-w-1 group-hover:opacity-75 dark:bg-gray-800">
-                      <img
-                        src={getImageSrc(callout.image_src)}
-                        alt={callout.image_alt}
-                        className="h-full w-full object-cover object-center"
-                        onError={(e) => {
-                          const img = e.target as HTMLImageElement;
-                          img.src = 'Mukaan/images/placeholder.svg';
-                        }}
-                        loading="lazy"
-                      />
-                    </div>
-                    <h3 className="mt-6 text-sm text-purple-400 hover:text-purple-300">
-                      <Link to={`/${callout.slug}`}>
-                        <span className="absolute inset-0" />
-                        {callout.name}
-                      </Link>
-                    </h3>
-                    <p className="text-base font-semibold text-gray-200">
-                      {callout.description}
-                    </p>
-                  </motion.div>
-                ))}
+                {isLoading ? (
+                  // Show skeleton cards while loading
+                  Array.from({ length: ITEMS_PER_PAGE }).map((_, index) => (
+                    <CardSkeleton key={`skeleton-${index}`} />
+                  ))
+                ) : (
+                  // Show actual content when loaded
+                  currentCallouts.map((callout) => (
+                    <motion.div
+                      key={callout.name}
+                      className="group relative"
+                      variants={itemVariants}
+                    >
+                      <div className="relative h-80 w-full overflow-hidden rounded-lg bg-white sm:aspect-h-1 sm:aspect-w-2 lg:aspect-h-1 lg:aspect-w-1 group-hover:opacity-75 dark:bg-gray-800">
+                        <img
+                          src={getImageSrc(callout.image_src)}
+                          alt={callout.image_alt}
+                          className="h-full w-full object-cover object-center"
+                          onError={(e) => {
+                            const img = e.target as HTMLImageElement;
+                            img.src = 'Mukaan/images/placeholder.svg';
+                          }}
+                          loading="lazy"
+                        />
+                      </div>
+                      <h3 className="mt-6 text-sm text-purple-400 hover:text-purple-300">
+                        <Link to={`/${callout.slug}`}>
+                          <span className="absolute inset-0" />
+                          {callout.name}
+                        </Link>
+                      </h3>
+                      <p className="text-base font-semibold text-gray-200">
+                        {callout.description}
+                      </p>
+                    </motion.div>
+                  ))
+                )}
               </motion.div>
 
               {/* Page indicator and Pagination Controls */}

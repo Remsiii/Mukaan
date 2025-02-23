@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { supabase } from '../../lib/supabase'
 import RichTextEditor from '../../components/RichTextEditor'
 import { GridIcon, LightbulbIcon, MonitorIcon, TagIcon, AppWindow } from "lucide-react";
+import { useAuth } from '../../context/AuthContext'; // Add this import
 
 const categories = [
     { id: "all", label: "Alle", icon: <GridIcon className="w-4 h-4" /> },
@@ -21,12 +22,21 @@ export default function EditCalloutDetailPage() {
     const { slug } = useParams<{ slug: string }>()
     const [searchParams] = useSearchParams();
     const isNew = searchParams.get('isNew') === 'true';
+    const { isAuthenticated } = useAuth(); // Add this
     const navigate = useNavigate()
     const [content, setContent] = useState('')  // Changed to empty string
     const [loading, setLoading] = useState(true)
     const [slugSuffix, setSlugSuffix] = useState<number>(0)
     const [selectedCategory, setSelectedCategory] = useState("tipps") // Default category for new callouts
     const [title, setTitle] = useState("")
+
+    // Add authentication check
+    useEffect(() => {
+        if (!isAuthenticated) {
+            navigate('/login');
+            return;
+        }
+    }, [isAuthenticated, navigate]);
 
     useEffect(() => {
         const loadContent = async () => {
@@ -68,6 +78,12 @@ export default function EditCalloutDetailPage() {
     }, [slug, isNew])
 
     const handleSave = async (newContent: string) => {
+        if (!isAuthenticated) {
+            alert('❌ Nicht authentifiziert');
+            navigate('/login');
+            return;
+        }
+
         const extractedTitle = extractTitleFromHTML(newContent);
         const titleToSave = extractedTitle || title;
 
@@ -85,24 +101,28 @@ export default function EditCalloutDetailPage() {
                         slug,
                         category: selectedCategory,
                         name: titleToSave,
-                        description: '' // You might want to add a description field later
-                    });
+                        description: ''
+                    })
+                    .select()  // Add select() to return the inserted row
 
                 if (calloutError) throw calloutError;
 
-                // Create HTML content
+                // Create HTML content with upsert
                 const { error: htmlError } = await supabase
                     .from('calloutshtml')
-                    .insert({
+                    .upsert({
                         slug,
                         html_content: newContent,
                         updated_at: new Date().toISOString(),
                         title: titleToSave
-                    });
+                    }, {
+                        onConflict: 'slug'
+                    })
+                    .select()  // Add select() to return the upserted row
 
                 if (htmlError) throw htmlError;
             } else {
-                // Update existing callout
+                // Update existing callout with upsert
                 const { error: htmlError } = await supabase
                     .from('calloutshtml')
                     .upsert({
@@ -111,7 +131,10 @@ export default function EditCalloutDetailPage() {
                         updated_at: new Date().toISOString(),
                         slug_suffix: slugSuffix,
                         title: titleToSave
-                    }, { onConflict: 'slug' })
+                    }, {
+                        onConflict: 'slug'
+                    })
+                    .select()  // Add select() to return the upserted row
 
                 if (htmlError) throw htmlError
 
@@ -122,14 +145,15 @@ export default function EditCalloutDetailPage() {
                         name: titleToSave
                     })
                     .eq('slug', slug)
+                    .select()  // Add select() to return the updated row
 
                 if (calloutError) throw calloutError
             }
 
             navigate('/admin')
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error saving:', error)
-            alert('❌ Fehler beim Speichern')
+            alert('❌ Fehler beim Speichern: ' + error.message)
         }
     }
 

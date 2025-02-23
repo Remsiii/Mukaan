@@ -1,6 +1,8 @@
 import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Image from '@tiptap/extension-image'
+import Link from '@tiptap/extension-link'
+import { Mark, mergeAttributes } from '@tiptap/core' // Change import
 import { useState, useEffect, useRef } from 'react'
 import EmojiPicker from 'emoji-picker-react'
 import {
@@ -11,6 +13,8 @@ import {
     Heading2Icon,
     ImageIcon,
     SmileIcon,
+    LinkIcon,
+    Square, // Add this import for button icon
 } from 'lucide-react'
 
 interface RichTextEditorProps {
@@ -23,10 +27,37 @@ const PLACEHOLDER = {
     text: 'Schreibe hier deinen Artikel. Nutze die Toolbar um Text zu formatieren, Listen zu erstellen oder Medien einzufügen.'
 }
 
+// Replace ButtonExtension with this new version
+const ButtonMark = Mark.create({
+    name: 'button',
+
+    addOptions() {
+        return {
+            HTMLAttributes: {
+                class: 'px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 inline-block cursor-pointer',
+            },
+        }
+    },
+
+    parseHTML() {
+        return [
+            {
+                tag: 'span[data-button]',
+            },
+        ]
+    },
+
+    renderHTML({ HTMLAttributes }) {
+        return ['span', mergeAttributes(this.options.HTMLAttributes, HTMLAttributes, { 'data-button': '' }), 0]
+    },
+})
+
 export default function RichTextEditor({ initialContent, onSave }: RichTextEditorProps) {
     const [imageUrl, setImageUrl] = useState('')
+    const [linkUrl, setLinkUrl] = useState('')
     const [showEmojiPicker, setShowEmojiPicker] = useState(false)
     const [showImageModal, setShowImageModal] = useState(false)
+    const [showLinkModal, setShowLinkModal] = useState(false)
     const fileInputRef = useRef<HTMLInputElement>(null)
 
     // Add useEffect to handle viewport meta tag
@@ -50,17 +81,33 @@ export default function RichTextEditor({ initialContent, onSave }: RichTextEdito
 
     const editor = useEditor({
         extensions: [
-            StarterKit,
+            StarterKit.configure({
+                paragraph: {
+                    HTMLAttributes: {
+                        class: 'mb-4 whitespace-pre-wrap break-words',
+                    },
+                },
+            }),
             Image.configure({
                 HTMLAttributes: {
                     class: 'rounded-lg max-w-full h-auto',
                 },
             }),
+            Link.configure({
+                openOnClick: true,
+                validate: href => /^(https?:)?\/\//.test(href), // Only allow absolute URLs
+                HTMLAttributes: {
+                    target: '_blank', // Add this to open in new tab
+                    rel: 'noopener noreferrer', // Add this for security
+                    class: 'text-blue-400 hover:underline',
+                },
+            }),
+            ButtonMark, // Use the new ButtonMark instead of ButtonExtension
         ],
         content: initialContent || `<h1>${PLACEHOLDER.heading}</h1><p>${PLACEHOLDER.text}</p>`,
         editorProps: {
             attributes: {
-                class: 'prose prose-lg max-w-none focus:outline-none min-h-[300px] prose-headings:text-white prose-p:text-white prose-strong:text-white prose-ul:text-white prose-li:text-white prose-ul:list-disc prose-ul:ml-4 prose-li:marker:text-white',
+                class: 'prose prose-lg max-w-none focus:outline-none min-h-[300px] prose-headings:text-white prose-p:text-white prose-strong:text-white prose-ul:text-white prose-li:text-white prose-ul:list-disc prose-ul:ml-4 prose-li:marker:text-white [&_p]:whitespace-pre-wrap [&_p]:break-words',
                 style: 'font-size: 16px;',
             },
         },
@@ -114,11 +161,59 @@ export default function RichTextEditor({ initialContent, onSave }: RichTextEdito
         setShowImageModal(false)
     }
 
+    const addLink = () => {
+        const selection = editor?.state.selection
+        const selectedText = selection ? editor?.state.doc.textBetween(selection.from, selection.to) : ''
+
+        if (selectedText) {
+            setShowLinkModal(true)
+        } else {
+            alert('Bitte wähle zuerst einen Text aus, der verlinkt werden soll.')
+        }
+    }
+
+    const handleLinkSubmit = () => {
+        if (editor && linkUrl) {
+            // Ensure URL has http:// or https:// prefix
+            let finalUrl = linkUrl.trim()
+            if (!finalUrl.startsWith('http://') && !finalUrl.startsWith('https://')) {
+                finalUrl = 'https://' + finalUrl
+            }
+
+            editor
+                .chain()
+                .focus()
+                .setLink({ href: finalUrl })
+                .run()
+        }
+        setLinkUrl('')
+        setShowLinkModal(false)
+    }
+
     const onEmojiClick = (emojiObject: any) => {
         if (editor) {
             editor.chain().focus().insertContent(emojiObject.emoji).run()
         }
         setShowEmojiPicker(false)
+    }
+
+    const addButton = () => {
+        if (editor) {
+            const selection = editor.state.selection
+            const text = selection ? editor.state.doc.textBetween(selection.from, selection.to) : ''
+
+            if (!text) {
+                alert('Bitte wähle zuerst einen Text aus, der zu einem Button werden soll.')
+                return
+            }
+
+            // Toggle button mark instead of wrapping
+            editor
+                .chain()
+                .focus()
+                .toggleMark('button')
+                .run()
+        }
     }
 
     if (!editor) return null
@@ -164,10 +259,25 @@ export default function RichTextEditor({ initialContent, onSave }: RichTextEdito
                 </button>
 
                 <button
+                    onClick={addLink}
+                    className={`p-2 rounded ${editor?.isActive('link') ? 'bg-gray-700' : ''}`}
+                >
+                    <LinkIcon className="w-5 h-5" />
+                </button>
+
+                <button
                     onClick={() => setShowEmojiPicker(!showEmojiPicker)}
                     className={`p-2 rounded hover:bg-gray-700`}
                 >
                     <SmileIcon className="w-5 h-5" />
+                </button>
+
+                <button
+                    onClick={addButton}
+                    className="p-2 rounded hover:bg-gray-700"
+                    title="Als Button formatieren"
+                >
+                    <Square className="w-5 h-5" />
                 </button>
             </div>
 
@@ -225,7 +335,42 @@ export default function RichTextEditor({ initialContent, onSave }: RichTextEdito
                 </div>
             )}
 
-            <div className="min-h-[300px] overflow-y-auto overflow-x-hidden max-w-full [&_ul]:list-disc [&_ul]:ml-4">
+            {showLinkModal && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-gray-800 p-6 rounded-lg w-96">
+                        <h3 className="text-white text-lg mb-4">Link einfügen</h3>
+                        <div className="space-y-4">
+                            <div>
+                                <label className="block text-white mb-2">URL</label>
+                                <input
+                                    type="url"
+                                    value={linkUrl}
+                                    onChange={(e) => setLinkUrl(e.target.value)}
+                                    placeholder="https://beispiel.de"
+                                    className="w-full p-2 rounded bg-gray-700 text-white"
+                                />
+                            </div>
+                            <div className="flex justify-end gap-2">
+                                <button
+                                    onClick={() => setShowLinkModal(false)}
+                                    className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700"
+                                >
+                                    Abbrechen
+                                </button>
+                                <button
+                                    onClick={handleLinkSubmit}
+                                    disabled={!linkUrl.trim()}
+                                    className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
+                                >
+                                    Link einfügen
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            <div className="min-h-[300px] overflow-y-auto overflow-x-hidden max-w-full [&_ul]:list-disc [&_ul]:ml-4 [&_p]:whitespace-pre-wrap [&_p]:mb-4">
                 <div className="w-full" style={{ maxWidth: '100%', overflowX: 'hidden' }}>
                     <EditorContent editor={editor} />
                 </div>
@@ -235,7 +380,7 @@ export default function RichTextEditor({ initialContent, onSave }: RichTextEdito
                     onClick={() => onSave(editor.getHTML())}
                     className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
                 >
-                    Save Content
+                    Speichern
                 </button>
             </div>
         </div>
