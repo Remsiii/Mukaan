@@ -1,11 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
 import { supabase } from '../../lib/supabase';
-import { PlusIcon, PencilSquareIcon, XMarkIcon, CheckIcon, TrashIcon, Cog6ToothIcon } from '@heroicons/react/24/outline';
+import { PlusIcon, PencilSquareIcon, XMarkIcon, CheckIcon, TrashIcon, Cog6ToothIcon, ArrowRightOnRectangleIcon } from '@heroicons/react/24/outline';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import imageCompression from 'browser-image-compression';
 import { Particles } from '@/registry/magicui/particles';
 import { LoadingSkeleton } from '@/components/LoadingSkeleton'
+import { useAuth } from '../../context/AuthContext';
 
 type ContentBlock = {
     type: 'paragraph' | 'heading' | 'list' | 'image';
@@ -42,6 +43,7 @@ const PLACEHOLDER_IMAGE = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/20
 
 const AdminDashboard = () => {
     const navigate = useNavigate();
+    const { isAuthenticated, logout } = useAuth();  // Removed unused 'user'
     const [callouts, setCallouts] = useState<Callout[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -57,21 +59,12 @@ const AdminDashboard = () => {
 
     // Simplified auth check
     useEffect(() => {
-        const checkAuth = async () => {
-            const { data: { user }, error } = await supabase.auth.getUser();
-
-            if (error || !user) {
-                console.error('Auth error:', error);
-                navigate('/login');
-                return;
-            }
-
-            // Remove the profile check since we don't have that table yet
-            console.log('User authenticated:', user.email);
-        };
-
-        checkAuth();
-    }, [navigate]);
+        if (!isAuthenticated) {
+            console.log('Not authenticated, redirecting to login');
+            navigate('/login');
+            return;
+        }
+    }, [isAuthenticated, navigate]);
 
     // Declare loadCallouts in outer scope so it can be reused
     const loadCallouts = async () => {
@@ -79,8 +72,7 @@ const AdminDashboard = () => {
             setIsLoading(true);
             setError(null);
 
-            const { data: { user }, error: authError } = await supabase.auth.getUser();
-            if (authError || !user) {
+            if (!isAuthenticated) {
                 throw new Error('Not authenticated');
             }
 
@@ -312,6 +304,11 @@ const AdminDashboard = () => {
         }
     };
 
+    const handleLogout = async () => {
+        await logout();
+        navigate('/login');
+    };
+
     if (isLoading) {
         return <LoadingSkeleton />;
     }
@@ -363,6 +360,13 @@ const AdminDashboard = () => {
                                 >
                                     <Cog6ToothIcon className="h-5 w-5 mr-1" />
                                     Einstellungen
+                                </button>
+                                <button
+                                    onClick={handleLogout}
+                                    className="flex items-center justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-700"
+                                >
+                                    <ArrowRightOnRectangleIcon className="h-5 w-5 mr-1" />
+                                    Logout
                                 </button>
                             </div>
                         </div>

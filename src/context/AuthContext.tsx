@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import bcrypt from 'bcryptjs';
 
@@ -17,33 +17,19 @@ const AuthContext = createContext<AuthContextType>({
 });
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [user, setUser] = useState<any>(null);
-
-    useEffect(() => {
-        // Check for existing session on mount
-        supabase.auth.getSession().then(({ data: { session } }) => {
-            setIsAuthenticated(!!session);
-            setUser(session?.user ?? null);
-        });
-
-        // Listen for auth state changes
-        const {
-            data: { subscription },
-        } = supabase.auth.onAuthStateChange((_event, session) => {
-            setIsAuthenticated(!!session);
-            setUser(session?.user ?? null);
-        });
-
-        return () => subscription.unsubscribe();
-    }, []);
+    const [isAuthenticated, setIsAuthenticated] = useState(() => {
+        return localStorage.getItem('isAdminAuthenticated') === 'true';
+    });
+    const [user, setUser] = useState<any>(() => {
+        const saved = localStorage.getItem('adminUser');
+        return saved ? JSON.parse(saved) : null;
+    });
 
     const login = async (username: string, password: string) => {
         try {
-            // Fetch the admin user from your secure table
             const { data: adminUser, error: adminError } = await supabase
                 .from('admin_users')
-                .select('*')
+                .select('id, username, role, password_hash')  // Added password_hash to selection
                 .eq('username', username)
                 .single();
 
@@ -56,11 +42,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 throw new Error('Ungültiger Benutzername oder Passwort');
             }
 
-            // Manually set auth state without using Supabase signIn
+            // Remove password_hash before storing in localStorage
+            const { password_hash, ...userWithoutPassword } = adminUser;
+
+            // Store auth state in localStorage
+            localStorage.setItem('isAdminAuthenticated', 'true');
+            localStorage.setItem('adminUser', JSON.stringify(userWithoutPassword));
+
             setIsAuthenticated(true);
-            setUser(adminUser);
+            setUser(userWithoutPassword);
         } catch (error) {
             console.error('Auth error:', error);
+            localStorage.removeItem('isAdminAuthenticated');
+            localStorage.removeItem('adminUser');
             setIsAuthenticated(false);
             setUser(null);
             throw error;
@@ -68,12 +62,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
 
     const logout = async () => {
-        const { error } = await supabase.auth.signOut();
-        if (error) {
+        try {
+            // Clear Supabase session
+            await supabase.auth.signOut();
+
+            // Clear localStorage
+            localStorage.removeItem('isAdminAuthenticated');
+            localStorage.removeItem('adminUser');
+
+            // Update state
+            setIsAuthenticated(false);
+            setUser(null);
+
+            // Force reload to clear any cached state
+            window.location.href = '/Mukaan/login';
+        } catch (error) {
             console.error('Logout error:', error);
+            // Still clear everything even if there's an error
+            localStorage.removeItem('isAdminAuthenticated');
+            localStorage.removeItem('adminUser');
+            setIsAuthenticated(false);
+            setUser(null);
         }
-        setIsAuthenticated(false);
-        setUser(null);
     };
 
     return (
