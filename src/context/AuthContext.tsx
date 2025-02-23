@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import bcrypt from 'bcryptjs';
 
@@ -6,26 +6,37 @@ interface AuthContextType {
     isAuthenticated: boolean;
     user: any | null;
     login: (username: string, password: string) => Promise<void>;
-    logout: () => void;
+    logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType>({
     isAuthenticated: false,
     user: null,
     login: async () => { },
-    logout: () => { },
+    logout: async () => { },
 });
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-    const [isAuthenticated, setIsAuthenticated] = useState(() => {
-        // Prüfe lokalen Storage beim Start
-        return localStorage.getItem('isAdminAuthenticated') === 'true';
-    });
-    const [user, setUser] = useState<any>(() => {
-        // Versuche User aus localStorage zu laden
-        const savedUser = localStorage.getItem('adminUser');
-        return savedUser ? JSON.parse(savedUser) : null;
-    });
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [user, setUser] = useState<any>(null);
+
+    useEffect(() => {
+        // Check for existing session on mount
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            setIsAuthenticated(!!session);
+            setUser(session?.user ?? null);
+        });
+
+        // Listen for auth state changes
+        const {
+            data: { subscription },
+        } = supabase.auth.onAuthStateChange((_event, session) => {
+            setIsAuthenticated(!!session);
+            setUser(session?.user ?? null);
+        });
+
+        return () => subscription.unsubscribe();
+    }, []);
 
     const login = async (username: string, password: string) => {
         try {
@@ -35,39 +46,40 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 .eq('username', username)
                 .single();
 
-            if (adminError) {
-                console.error('Database error:', adminError);
-                throw new Error('Login fehlgeschlagen');
-            }
-
-            if (!adminUser) {
-                throw new Error('Benutzer nicht gefunden');
+            if (adminError || !adminUser) {
+                throw new Error('Ungültiger Benutzername oder Passwort');
             }
 
             const isValidPassword = await bcrypt.compare(password, adminUser.password_hash);
             if (!isValidPassword) {
-                throw new Error('Falsches Passwort');
+                throw new Error('Ungültiger Benutzername oder Passwort');
             }
 
-            // Speichere Auth-Status und User in localStorage
-            localStorage.setItem('isAdminAuthenticated', 'true');
-            localStorage.setItem('adminUser', JSON.stringify(adminUser));
+            // Sign in with Supabase using email/password
+            const { error: signInError } = await supabase.auth.signInWithPassword({
+                email: adminUser.email, // Make sure your admin_users table has an email field
+                password: password,
+            });
+
+            if (signInError) {
+                throw signInError;
+            }
 
             setIsAuthenticated(true);
             setUser(adminUser);
         } catch (error) {
             console.error('Auth error:', error);
-            localStorage.removeItem('isAdminAuthenticated');
-            localStorage.removeItem('adminUser');
             setIsAuthenticated(false);
             setUser(null);
             throw error;
         }
     };
 
-    const logout = () => {
-        localStorage.removeItem('isAdminAuthenticated');
-        localStorage.removeItem('adminUser');
+    const logout = async () => {
+        const { error } = await supabase.auth.signOut();
+        if (error) {
+            console.error('Logout error:', error);
+        }
         setIsAuthenticated(false);
         setUser(null);
     };
