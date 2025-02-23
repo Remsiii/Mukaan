@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { supabase } from '../../lib/supabase';
-import { PlusIcon, PencilSquareIcon, XMarkIcon, DocumentTextIcon, CheckIcon, TrashIcon } from '@heroicons/react/24/outline';
+import { PlusIcon, PencilSquareIcon, XMarkIcon, DocumentTextIcon, CheckIcon, TrashIcon, Cog6ToothIcon } from '@heroicons/react/24/outline';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import imageCompression from 'browser-image-compression';
@@ -39,6 +39,12 @@ type Callout = {
     updated_at?: string;
 };
 
+type User = {
+    id: string;
+    email: string | undefined;
+    created_at: string;
+};
+
 const PLACEHOLDER_IMAGE = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300'%3E%3Crect width='400' height='300' fill='%234B5563'/%3E%3Ctext x='50%25' y='50%25' font-family='Arial' font-size='24' fill='%239CA3AF' text-anchor='middle'%3EKein Bild verfügbar%3C/text%3E%3C/svg%3E";
 
 const AdminDashboard = () => {
@@ -58,6 +64,7 @@ const AdminDashboard = () => {
     const [activeCallout, setActiveCallout] = useState<Callout | null>(null)
     const [imageUrl, setImageUrl] = useState('')
     const fileInputRef = useRef<HTMLInputElement>(null)
+    const [users, setUsers] = useState<User[]>([]);
 
     // Simplified auth check
     useEffect(() => {
@@ -77,60 +84,96 @@ const AdminDashboard = () => {
         checkAuth();
     }, [navigate]);
 
+    // Declare loadCallouts in outer scope so it can be reused
+    const loadCallouts = async () => {
+        try {
+            setIsLoading(true);
+            setError(null);
+
+            const { data: { user }, error: authError } = await supabase.auth.getUser();
+            if (authError || !user) {
+                throw new Error('Not authenticated');
+            }
+
+            const { data, error: fetchError } = await supabase
+                .from('callouts')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            if (fetchError) {
+                throw new Error(fetchError.message);
+            }
+
+            setCallouts(data || []);
+        } catch (error: any) {
+            console.error('Error in loadCallouts:', error);
+            setError(error.message);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     // Load callouts when component mounts
     useEffect(() => {
-        const loadCallouts = async () => {
-            try {
-                setIsLoading(true);
-                setError(null);
-
-                const { data: { user }, error: authError } = await supabase.auth.getUser();
-                if (authError || !user) {
-                    throw new Error('Not authenticated');
-                }
-
-                const { data, error: fetchError } = await supabase
-                    .from('callouts')
-                    .select('*')
-                    .order('created_at', { ascending: false });
-
-                if (fetchError) {
-                    throw new Error(fetchError.message);
-                }
-
-                setCallouts(data || []);
-            } catch (error: any) {
-                console.error('Error in loadCallouts:', error);
-                setError(error.message);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
         loadCallouts();
     }, []);
+
+    const loadUsers = async () => {
+        try {
+            const { data: { user: currentUser } } = await supabase.auth.getUser();
+            if (!currentUser) return;
+
+            const { data, error } = await supabase.auth.admin.listUsers();
+            if (error) throw error;
+
+            setUsers(data.users || []);
+        } catch (error) {
+            console.error('Error loading users:', error);
+        }
+    };
 
     const handleDelete = async (callout: Callout) => {
         setIsDeleting(true);
         try {
-            // Lösche zuerst den HTML-Content
-            await supabase
+            console.log('Deleting callout:', callout);
+
+            // First try to delete the HTML content
+            const { error: htmlError, data: htmlData } = await supabase
                 .from('calloutshtml')
                 .delete()
-                .eq('slug', callout.slug);
+                .eq('slug', callout.slug)
+                .select();
 
-            // Dann lösche den Callout selbst
-            const { error } = await supabase
+            console.log('HTML delete response:', htmlData, htmlError);
+
+            if (htmlError) {
+                console.error('HTML delete error:', htmlError);
+                throw htmlError;
+            }
+
+            // Then delete the callout
+            const { error, data } = await supabase
                 .from('callouts')
                 .delete()
-                .eq('id', callout.id);
+                .eq('id', callout.id)
+                .select();
 
-            if (error) throw error;
+            console.log('Callout delete response:', data, error);
 
-            setCallouts(callouts.filter(c => c.id !== callout.id));
+            if (error) {
+                console.error('Callout delete error:', error);
+                throw error;
+            }
+
+            // Remove the deleted callout from state
+            setCallouts(prevCallouts =>
+                prevCallouts.filter(c => c.id !== callout.id)
+            );
+
+            alert('Callout erfolgreich gelöscht');
         } catch (error: any) {
-            console.error('Error deleting callout:', error);
-            alert('Error: ' + error.message);
+            console.error('Error in handleDelete:', error);
+            alert('Fehler beim Löschen: ' + error.message);
         } finally {
             setIsDeleting(false);
         }
@@ -249,16 +292,24 @@ const AdminDashboard = () => {
         if (!editableFields) return;
 
         try {
-            const { error } = await supabase
+            console.log('Saving field:', editableFields.field, 'with value:', editValue);
+
+            const { error, data } = await supabase
                 .from('callouts')
                 .update({ [editableFields.field]: editValue })
-                .eq('id', callout.id);
+                .eq('id', callout.id)
+                .select();
 
-            if (error) throw error;
+            if (error) {
+                console.error('Database error:', error);
+                throw error;
+            }
 
-            setCallouts(callouts.map(c =>
-                c.id === callout.id ? { ...c, [editableFields.field]: editValue } : c
-            ));
+            console.log('Update response:', data);
+
+            // Refresh the callouts list
+            await loadCallouts();
+
             setEditableFields(null);
         } catch (error: any) {
             console.error('Error saving:', error);
@@ -272,6 +323,7 @@ const AdminDashboard = () => {
 
         try {
             setUploading(true);
+            console.log('Uploading image for callout:', callout);
 
             const options = {
                 maxSizeMB: 1,
@@ -288,16 +340,26 @@ const AdminDashboard = () => {
                 .from('card-images')
                 .upload(filePath, compressedFile);
 
+            console.log('Upload response:', data, uploadError);
+
             if (uploadError) throw uploadError;
 
             const { data: { publicUrl } } = supabase.storage
                 .from('card-images')
                 .getPublicUrl(filePath);
 
-            await updateCalloutImage(callout.id, publicUrl);
-            setCallouts(callouts.map(c =>
-                c.id === callout.id ? { ...c, image_src: publicUrl } : c
-            ));
+            const { error: updateError } = await supabase
+                .from('callouts')
+                .update({ image_src: publicUrl })
+                .eq('id', callout.id)
+                .select();
+
+            console.log('Image update response:', updateError);
+
+            if (updateError) throw updateError;
+
+            // Refresh the callouts list
+            await loadCallouts();
 
         } catch (error: any) {
             console.error('Error uploading image:', error);
@@ -385,19 +447,20 @@ const AdminDashboard = () => {
                                 Seiten
                             </h2>
                             <div className="flex space-x-4">
-                                <button
-                                    onClick={() => navigate('/about/edit')}
-                                    className="flex items-center justify-center rounded-md bg-emerald-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-500"
-                                >
-                                    <DocumentTextIcon className="h-5 w-5 mr-1" />
-                                    Über-Seite bearbeiten
-                                </button>
+
                                 <button
                                     onClick={handleAddCallout}
                                     className="flex items-center justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500"
                                 >
                                     <PlusIcon className="h-5 w-5 mr-1" />
-                                    Callout hinzufügen
+                                    Beitrag hinzufügen
+                                </button>
+                                <button
+                                    onClick={() => navigate('/admin/settings')}
+                                    className="flex items-center justify-center rounded-md bg-gray-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-500"
+                                >
+                                    <Cog6ToothIcon className="h-5 w-5 mr-1" />
+                                    Einstellungen
                                 </button>
                             </div>
                         </div>

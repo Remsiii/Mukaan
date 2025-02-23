@@ -140,7 +140,7 @@ export default function Category() {
                         className="h-full w-full object-cover object-center"
                         onError={(e) => {
                           const img = e.target as HTMLImageElement;
-                          img.src = 'images/placeholder.svg';
+                          img.src = 'Mukaan/images/placeholder.svg';
                         }}
                         loading="lazy"
                       />

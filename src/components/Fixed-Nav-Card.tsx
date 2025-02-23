@@ -38,7 +38,7 @@ const FixedNavCard: React.FC = () => {
 
     return (
         <>
-            <div className="fixed inset-x-0 bottom-10 flex justify-center items-center z-99990">
+            <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-40">
                 <AnimatedDock items={dockItems} largeClassName="max-w-lg" />
             </div>
             {isSearchOpen && (

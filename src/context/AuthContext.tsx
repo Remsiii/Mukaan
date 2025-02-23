@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
+import bcrypt from 'bcryptjs';
 
 interface AuthContextType {
     isAuthenticated: boolean;
@@ -40,19 +41,32 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const login = async (username: string, password: string) => {
         try {
-            // Use the full email for authentication
-            const { error } = await supabase.auth.signInWithPassword({
-                email: 'mukaanAdmin@mukaan.de', // hardcoded email
-                password: password
-            });
+            const { data: adminUser, error: adminError } = await supabase
+                .from('admin_users')
+                .select('*')
+                .eq('username', username)
+                .maybeSingle(); // changed from .single() to .maybeSingle()
 
-            if (error) {
-                console.error('Auth error:', error);
+            if (adminError) {
+                console.error('Database error:', adminError);
+                throw new Error('Login fehlgeschlagen. Bitte versuchen Sie es später erneut.');
+            }
+
+            if (!adminUser) {
                 throw new Error('Ungültiger Benutzername oder Passwort');
             }
+
+            const isValidPassword = await bcrypt.compare(password, adminUser.password_hash);
+
+            if (!isValidPassword) {
+                throw new Error('Ungültiger Benutzername oder Passwort');
+            }
+
+            setIsAuthenticated(true);
+            setUser(adminUser);
         } catch (error) {
             console.error('Auth error:', error);
-            throw new Error('Ungültiger Benutzername oder Passwort');
+            throw error;
         }
     };
 

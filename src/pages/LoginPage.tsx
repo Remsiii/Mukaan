@@ -35,12 +35,12 @@ export default function LoginPage() {
         setError(null);
 
         try {
+            console.log('Attempting login with username:', formData.email); // Debug log
             await login(formData.email, formData.password);
-            // Explizit zum Admin-Bereich navigieren
             navigate('/admin', { replace: true });
-        } catch (error) {
+        } catch (error: any) {
             console.error('Login error:', error);
-            setError('Ungültiger Benutzername oder Passwort');
+            setError(error.message || 'Ungültiger Benutzername oder Passwort');
         } finally {
             setIsLoading(false);
         }

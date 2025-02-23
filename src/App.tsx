@@ -21,6 +21,7 @@ import EditCalloutPage from "./pages/Admin/EditCalloutPage";
 import EditCalloutDetailPage from "./pages/Admin/EditCalloutDetailPage";
 import { AuthProvider } from './context/AuthContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
+import AdminSettings from "./pages/Admin/Settings/AdminSettings";
 
 // Wrap Category with title management
 const Home = () => {
@@ -84,6 +85,14 @@ function App() {
                       element={
                         <ProtectedRoute>
                           <EditCalloutDetailPage />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/admin/settings"
+                      element={
+                        <ProtectedRoute>
+                          <AdminSettings />
                         </ProtectedRoute>
                       }
                     />
