@@ -179,7 +179,7 @@ const PasswordUpdateForm = React.memo(function PasswordUpdateForm({
 
 export default function AdminSettings() {
     const navigate = useNavigate();
-    const { user } = useAuth(); // Added to get the current user
+    const { isAuthenticated, user } = useAuth();
     const [users, setUsers] = useState<User[]>([]);
     const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
     const [searchQuery, setSearchQuery] = useState('');
@@ -194,17 +194,25 @@ export default function AdminSettings() {
     const [userToDelete, setUserToDelete] = useState<User | null>(null);
 
     useEffect(() => {
-        checkAuth();
-        loadUsers();
-    }, []);
+        const init = async () => {
+            if (!isAuthenticated) {
+                console.log('Not authenticated, redirecting to login');
+                navigate('/login');
+                return;
+            }
 
-    const checkAuth = async () => {
-        const { data: { user }, error } = await supabase.auth.getUser();
-        if (error || !user) {
-            navigate('/login');
-        }
-        setLoading(false);
-    };
+            try {
+                setLoading(true);
+                await loadUsers();
+            } catch (err) {
+                console.error('Initialization error:', err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        init();
+    }, [isAuthenticated, navigate]); // Add isAuthenticated to dependencies
 
     const loadUsers = async () => {
         try {

@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import bcrypt from 'bcryptjs';
 
@@ -60,6 +60,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             throw error;
         }
     };
+
+    useEffect(() => {
+        const checkAuthState = () => {
+            const isAuth = localStorage.getItem('isAdminAuthenticated') === 'true';
+            const savedUser = localStorage.getItem('adminUser');
+
+            setIsAuthenticated(isAuth);
+            if (savedUser) {
+                setUser(JSON.parse(savedUser));
+            }
+        };
+
+        checkAuthState();
+
+        // Optional: Add event listener for storage changes
+        window.addEventListener('storage', checkAuthState);
+        return () => window.removeEventListener('storage', checkAuthState);
+    }, []);
 
     const logout = async () => {
         try {

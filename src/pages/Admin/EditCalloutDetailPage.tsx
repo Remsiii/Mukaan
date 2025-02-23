@@ -88,123 +88,137 @@ export default function EditCalloutDetailPage() {
         const titleToSave = extractedTitle || title;
 
         if (!titleToSave.trim()) {
-            alert('❌ Bitte gib einen Titel ein')
-            return
+            alert('❌ Bitte gib einen Titel ein');
+            return;
         }
 
         try {
             if (isNew) {
-                // Create new callout
+                // Erst den Callout erstellen
                 const { error: calloutError } = await supabase
                     .from('callouts')
                     .insert({
                         slug,
                         category: selectedCategory,
                         name: titleToSave,
-                        description: ''
+                        description: titleToSave,
+                        image_src: '',
+                        image_alt: titleToSave,
+                        created_at: new Date().toISOString(),
+                        updated_at: new Date().toISOString()
                     })
-                    .select()  // Add select() to return the inserted row
+                    .select()
+                    .single();
 
-                if (calloutError) throw calloutError;
+                if (calloutError) {
+                    console.error('Callout creation error:', calloutError);
+                    throw calloutError;
+                }
 
-                // Create HTML content with upsert
+                // Dann den HTML-Content erstellen
                 const { error: htmlError } = await supabase
                     .from('calloutshtml')
-                    .upsert({
+                    .insert({
                         slug,
                         html_content: newContent,
                         updated_at: new Date().toISOString(),
                         title: titleToSave
-                    }, {
-                        onConflict: 'slug'
-                    })
-                    .select()  // Add select() to return the upserted row
+                    });
 
                 if (htmlError) throw htmlError;
             } else {
-                // Update existing callout with upsert
+                // Update existing content
                 const { error: htmlError } = await supabase
                     .from('calloutshtml')
-                    .upsert({
-                        slug,
+                    .update({
                         html_content: newContent,
                         updated_at: new Date().toISOString(),
                         slug_suffix: slugSuffix,
                         title: titleToSave
-                    }, {
-                        onConflict: 'slug'
                     })
-                    .select()  // Add select() to return the upserted row
+                    .eq('slug', slug);
 
-                if (htmlError) throw htmlError
+                if (htmlError) throw htmlError;
 
                 const { error: calloutError } = await supabase
                     .from('callouts')
                     .update({
                         category: selectedCategory,
-                        name: titleToSave
+                        name: titleToSave,
+                        updated_at: new Date().toISOString()
                     })
-                    .eq('slug', slug)
-                    .select()  // Add select() to return the updated row
+                    .eq('slug', slug);
 
-                if (calloutError) throw calloutError
+                if (calloutError) throw calloutError;
             }
 
-            navigate('/admin')
+            navigate('/admin');
         } catch (error: any) {
-            console.error('Error saving:', error)
-            alert('❌ Fehler beim Speichern: ' + error.message)
+            console.error('Error saving:', error);
+            if (error.code === '42501' || error.code === '401') {
+                alert('❌ Sitzung abgelaufen. Bitte melden Sie sich erneut an.');
+                navigate('/login');
+            } else {
+                alert('❌ Fehler beim Speichern: ' + error.message);
+            }
         }
-    }
+    };
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center min-h-screen">
+            <div className="flex items-center justify-center min-h-[100dvh]">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
             </div>
         )
     }
 
     return (
-        <div className="max-w-4xl mx-auto p-6 overflow-x-hidden">
-            <div className="flex justify-between items-center mb-6 mt-5">
-                <button
-                    onClick={() => navigate('/admin')}
-                    className="text-blue-500 hover:text-blue-600"
-                >
-                    ← Zurück
-                </button>
-                <div className="text-sm text-gray-500">
-                    Artikel-ID: {slug}{slugSuffix > 0 ? `-${slugSuffix}` : ''}
+        <div className="min-h-[100dvh] w-full overflow-hidden touch-pan-y">
+            <div className="max-w-full sm:max-w-4xl mx-auto px-3 sm:px-6 py-4 sm:py-6">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-4 sm:mb-6">
+                    <button
+                        onClick={() => navigate('/admin')}
+                        className="text-blue-500 hover:text-blue-600 text-sm sm:text-base flex items-center"
+                    >
+                        ← Zurück
+                    </button>
+                    <div className="text-xs sm:text-sm text-gray-500 break-all">
+                        Artikel-ID: {slug}{slugSuffix > 0 ? `-${slugSuffix}` : ''}
+                    </div>
+                </div>
+
+                {/* Kategorie-Auswahl */}
+                <div className="mb-4 sm:mb-6">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Kategorie
+                    </label>
+                    <div className="flex flex-wrap gap-1.5 sm:gap-2">
+                        {categories.filter(cat => cat.id !== 'all').map((category) => (
+                            <button
+                                key={category.id}
+                                onClick={() => setSelectedCategory(category.id)}
+                                className={`inline-flex items-center px-2 py-1 rounded-md text-xs sm:text-sm transition-colors ${selectedCategory === category.id
+                                    ? 'bg-indigo-600 text-white'
+                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                    }`}
+                            >
+                                <span className="w-3.5 h-3.5 sm:w-4 sm:h-4">{category.icon}</span>
+                                <span className="ml-1">{category.label}</span>
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Rich Text Editor with mobile optimization */}
+                <div className="rounded-lg border border-gray-200 shadow-sm overflow-hidden">
+                    <div className="w-full max-w-full overflow-x-hidden">
+                        <RichTextEditor
+                            initialContent={content}
+                            onSave={handleSave}
+                        />
+                    </div>
                 </div>
             </div>
-
-            {/* Kategorie-Auswahl */}
-            <div className="mb-6">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Kategorie
-                </label>
-                <div className="flex gap-2 flex-wrap">
-                    {categories.filter(cat => cat.id !== 'all').map((category) => (
-                        <button
-                            key={category.id}
-                            onClick={() => setSelectedCategory(category.id)}
-                            className={`inline-flex items-center px-3 py-2 rounded-md ${selectedCategory === category.id
-                                ? 'bg-indigo-600 text-white'
-                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                }`}
-                        >
-                            {category.icon}
-                            <span className="ml-2">{category.label}</span>
-                        </button>
-                    ))}
-                </div>
-            </div>
-
-            <RichTextEditor
-                initialContent={content}
-                onSave={handleSave}
-            />
         </div>
-    )
+    );
 }

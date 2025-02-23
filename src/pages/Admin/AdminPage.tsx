@@ -289,14 +289,16 @@ const AdminDashboard = () => {
         if (error) throw error;
     };
 
-    // Modified handleAddCallout to not create DB entry
-    const handleAddCallout = async () => {
+    // Replace the existing handleAddCallout with this simpler version
+    const handleAddCallout = () => {
         try {
-            const { data: { user }, error: authError } = await supabase.auth.getUser();
-            if (authError || !user) throw new Error('Not authenticated');
+            if (!isAuthenticated) {
+                alert('❌ Nicht authentifiziert');
+                navigate('/login');
+                return;
+            }
 
             const tempSlug = `callout-${Date.now()}`; // Temporary slug
-            // Navigate to edit page with isNew flag
             navigate(`/${tempSlug}/edit?isNew=true`);
         } catch (error: any) {
             console.error('Error:', error);
@@ -330,7 +332,7 @@ const AdminDashboard = () => {
     }
 
     return (
-        <div className=" mt-10 relative backdrop-blur-xl bg-gradient-to-b  to-grey/10 rounded-2xl p-8 pb-16 shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-gray-100/20 ">
+        <div className="mt-10 relative backdrop-blur-xl bg-gradient-to-b to-grey/10 rounded-2xl p-4 pb-16 shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-gray-100/20">
             <Particles
                 className="absolute inset-0 z-0"
                 quantity={100}
@@ -338,232 +340,217 @@ const AdminDashboard = () => {
                 color={"#ffffff"}
                 refresh
             />
-            <div className="mx-auto max-w-7xl ">
-                <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8 ">
-                    <div className="mb-12">
-                        <div className="flex justify-between items-center mb-8">
-                            <h2 className="text-2xl font-bold tracking-tight text-white">
-                                Seiten
-                            </h2>
-                            <div className="flex space-x-4">
+            <div className="mx-auto">
+                <div className="px-4 py-8">
+                    <div className="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                        <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-white">
+                            Seiten
+                        </h2>
+                        <div className="flex flex-wrap gap-2">
+                            <button
+                                onClick={handleAddCallout}
+                                className="flex items-center justify-center rounded-md bg-indigo-600 px-2 sm:px-3 py-2 text-xs sm:text-sm font-semibold text-white shadow-sm hover:bg-indigo-500"
+                            >
+                                <PlusIcon className="h-4 w-4 sm:h-5 sm:w-5 mr-1" />
+                                <span className="hidden sm:inline">Beitrag erstellen</span>
+                                <span className="sm:hidden">Neu</span>
+                            </button>
 
-                                <button
-                                    onClick={handleAddCallout}
-                                    className="flex items-center justify-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500"
-                                >
-                                    <PlusIcon className="h-5 w-5 mr-1" />
-                                    Beitrag hinzufügen
-                                </button>
-                                <button
-                                    onClick={() => navigate('/admin/settings')}
-                                    className="flex items-center justify-center rounded-md bg-gray-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-gray-500"
-                                >
-                                    <Cog6ToothIcon className="h-5 w-5 mr-1" />
-                                    Einstellungen
-                                </button>
-                                <button
-                                    onClick={handleLogout}
-                                    className="flex items-center justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-700"
-                                >
-                                    <ArrowRightOnRectangleIcon className="h-5 w-5 mr-1" />
-                                    Logout
-                                </button>
-                            </div>
+                            <button
+                                onClick={() => navigate('/admin/settings')}
+                                className="flex items-center justify-center rounded-md bg-gray-600 px-2 sm:px-3 py-2 text-xs sm:text-sm font-semibold text-white shadow-sm hover:bg-gray-500"
+                            >
+                                <Cog6ToothIcon className="h-4 w-4 sm:h-5 sm:w-5 mr-1" />
+                                <span className="hidden sm:inline">Einstellungen</span>
+                                <span className="sm:hidden">Einstellungen</span>
+                            </button>
+
+                            <button
+                                onClick={handleLogout}
+                                className="flex items-center justify-center rounded-md bg-red-600 px-2 sm:px-3 py-2 text-xs sm:text-sm font-semibold text-white shadow-sm hover:bg-red-700"
+                            >
+                                <ArrowRightOnRectangleIcon className="h-4 w-4 sm:h-5 sm:w-5 mr-1" />
+                                <span className="hidden sm:inline">Abmelden</span>
+                                <span className="sm:hidden">Abmelden</span>
+                            </button>
                         </div>
                     </div>
 
-                    <div className="mb-12">
-                        <motion.div
-                            className="mt-6 space-y-12 lg:grid lg:grid-cols-3 lg:gap-x-6 lg:gap-y-12 lg:space-y-0"
-                            initial="hidden"
-                            animate="show"
-                            variants={{
-                                hidden: { opacity: 0 },
-                                show: {
-                                    opacity: 1,
-                                    transition: {
-                                        staggerChildren: 0.1
-                                    }
-                                }
-                            }}
-                        >
-                            {callouts.map((callout) => (
-                                <motion.div
-                                    key={callout.id}
-                                    className="group relative"
-                                    variants={{
-                                        hidden: { opacity: 0, y: 20 },
-                                        show: { opacity: 1, y: 0 }
-                                    }}
-                                >
-                                    {editingId === callout.id ? (
-                                        <div className="p-4 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
-                                            <div className="space-y-4">
-                                                <input
-                                                    type="text"
-                                                    value={editedCallout?.name || ''}
-                                                    onChange={e => setEditedCallout(prev => prev ? { ...prev, name: e.target.value } : null)}
-                                                    className="w-full p-2 border rounded dark:bg-gray-700 dark:text-white"
-                                                    placeholder="Name"
-                                                />
-                                                <input
-                                                    type="text"
-                                                    value={editedCallout?.description || ''}
-                                                    onChange={e => setEditedCallout(prev => prev ? { ...prev, description: e.target.value } : null)}
-                                                    className="w-full p-2 border rounded dark:bg-gray-700 dark:text-white"
-                                                    placeholder="Beschreibung"
-                                                />
-                                                <input
-                                                    type="text"
-                                                    value={editedCallout?.image_src || ''}
-                                                    onChange={e => setEditedCallout(prev => prev ? { ...prev, image_src: e.target.value } : null)}
-                                                    className="w-full p-2 border rounded dark:bg-gray-700 dark:text-white"
-                                                    placeholder="Bild-URL"
-                                                />
-                                                <input
-                                                    type="text"
-                                                    value={editedCallout?.image_alt || ''}
-                                                    onChange={e => setEditedCallout(prev => prev ? { ...prev, image_alt: e.target.value } : null)}
-                                                    className="w-full p-2 border rounded dark:bg-gray-700 dark:text-white"
-                                                    placeholder="Alt-Text"
-                                                />
-                                                <div className="flex justify-end space-x-2">
-                                                    <button
-                                                        onClick={handleSave}
-                                                        className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700"
-                                                    >
-                                                        <CheckIcon className="h-5 w-5" />
-                                                    </button>
-                                                    <button
-                                                        onClick={handleCancel}
-                                                        className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
-                                                    >
-                                                        <XMarkIcon className="h-5 w-5" />
-                                                    </button>
-                                                </div>
+                    <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+                        {callouts.map((callout) => (
+                            <motion.div
+                                key={callout.id}
+                                className="group relative bg-gray-800/50 rounded-lg p-4"
+                                variants={{
+                                    hidden: { opacity: 0, y: 20 },
+                                    show: { opacity: 1, y: 0 }
+                                }}
+                            >
+                                {editingId === callout.id ? (
+                                    <div className="p-4 bg-white dark:bg-gray-800 rounded-lg shadow-lg">
+                                        <div className="space-y-4">
+                                            <input
+                                                type="text"
+                                                value={editedCallout?.name || ''}
+                                                onChange={e => setEditedCallout(prev => prev ? { ...prev, name: e.target.value } : null)}
+                                                className="w-full p-2 border rounded dark:bg-gray-700 dark:text-white"
+                                                placeholder="Name"
+                                            />
+                                            <input
+                                                type="text"
+                                                value={editedCallout?.description || ''}
+                                                onChange={e => setEditedCallout(prev => prev ? { ...prev, description: e.target.value } : null)}
+                                                className="w-full p-2 border rounded dark:bg-gray-700 dark:text-white"
+                                                placeholder="Beschreibung"
+                                            />
+                                            <input
+                                                type="text"
+                                                value={editedCallout?.image_src || ''}
+                                                onChange={e => setEditedCallout(prev => prev ? { ...prev, image_src: e.target.value } : null)}
+                                                className="w-full p-2 border rounded dark:bg-gray-700 dark:text-white"
+                                                placeholder="Bild-URL"
+                                            />
+                                            <input
+                                                type="text"
+                                                value={editedCallout?.image_alt || ''}
+                                                onChange={e => setEditedCallout(prev => prev ? { ...prev, image_alt: e.target.value } : null)}
+                                                className="w-full p-2 border rounded dark:bg-gray-700 dark:text-white"
+                                                placeholder="Alt-Text"
+                                            />
+                                            <div className="flex justify-end space-x-2">
+                                                <button
+                                                    onClick={handleSave}
+                                                    className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700"
+                                                >
+                                                    <CheckIcon className="h-5 w-5" />
+                                                </button>
+                                                <button
+                                                    onClick={handleCancel}
+                                                    className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
+                                                >
+                                                    <XMarkIcon className="h-5 w-5" />
+                                                </button>
                                             </div>
                                         </div>
-                                    ) : (
-                                        <>
-                                            <div className="relative h-80 w-full overflow-hidden rounded-lg bg-white sm:aspect-h-1 sm:aspect-w-2 lg:aspect-h-1 lg:aspect-w-1 dark:bg-gray-800">
-                                                <img
-                                                    src={callout.image_src || PLACEHOLDER_IMAGE}
-                                                    alt={callout.image_alt || 'Platzhalterbild'}
-                                                    className="h-full w-full object-cover object-center"
-                                                />
-                                                <div className="absolute inset-0 flex items-center justify-center">
-                                                    <button
-                                                        onClick={() => {
-                                                            setActiveCallout(callout);
-                                                            setShowImageModal(true);
-                                                        }}
-                                                        className="cursor-pointer bg-black bg-opacity-20 rounded-full p-2 hover:bg-opacity-30 transition-all"
-                                                    >
-                                                        <PencilSquareIcon className="h-5 w-5 text-white" />
-                                                    </button>
-                                                </div>
-                                            </div>
-                                            <div className="mt-6">
-                                                <div className="flex items-center justify-between">
-                                                    {editableFields?.id === callout.id && editableFields.field === 'name' ? (
-                                                        <div className="flex items-center space-x-2 w-full">
-                                                            <input
-                                                                type="text"
-                                                                value={editValue}
-                                                                onChange={(e) => setEditValue(e.target.value)}
-                                                                className="text-sm text-white w-full bg-transparent border-b border-gray-300 focus:border-indigo-500 focus:outline-none p-1"
-                                                                autoFocus
-                                                            />
-                                                            <button onClick={() => handleFieldSave(callout)} className="text-green-600">
-                                                                <CheckIcon className="h-4 w-4" />
-                                                            </button>
-                                                            <button onClick={() => setEditableFields(null)} className="text-red-600">
-                                                                <XMarkIcon className="h-4 w-4" />
-                                                            </button>
-                                                        </div>
-                                                    ) : (
-                                                        <div className="flex items-center justify-between w-full">
-                                                            <h3 className="text-sm text-white">
-                                                                {callout.name}
-                                                            </h3>
-                                                            <button
-                                                                onClick={() => handleFieldEdit(callout, 'name')}
-                                                                className="ml-2 text-gray-400 hover:text-indigo-600 transition-colors"
-                                                                aria-label="Name bearbeiten"
-                                                            >
-                                                                <PencilSquareIcon className="h-4 w-4" />
-                                                            </button>
-                                                        </div>
-                                                    )}
-                                                </div>
+                                    </div>
+                                ) : (
+                                    <>
+                                        <div className="relative h-48 sm:h-64 lg:h-80 w-full overflow-hidden rounded-lg bg-white">
+                                            <img
+                                                src={callout.image_src || PLACEHOLDER_IMAGE}
+                                                alt={callout.image_alt || 'Platzhalterbild'}
+                                                className="h-full w-full object-cover object-center"
+                                            />
+                                            <button
+                                                onClick={() => {
+                                                    setActiveCallout(callout);
+                                                    setShowImageModal(true);
+                                                }}
+                                                className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-20 opacity-0 group-hover:opacity-100 transition-opacity"
+                                            >
+                                                <PencilSquareIcon className="h-5 w-5 text-white" />
+                                            </button>
+                                        </div>
 
-                                                <div className="flex items-center justify-between mt-1">
-                                                    {editableFields?.id === callout.id && editableFields.field === 'description' ? (
-                                                        <div className="flex items-center space-x-2 w-full">
-                                                            <input
-                                                                type="text"
-                                                                value={editValue}
-                                                                onChange={(e) => setEditValue(e.target.value)}
-                                                                className="text-base font-semibold text-white w-full bg-transparent border-b border-gray-300 focus:border-indigo-500 focus:outline-none p-1"
-                                                                autoFocus
-                                                            />
-                                                            <button onClick={() => handleFieldSave(callout)} className="text-green-600">
-                                                                <CheckIcon className="h-4 w-4" />
-                                                            </button>
-                                                            <button onClick={() => setEditableFields(null)} className="text-red-600">
-                                                                <XMarkIcon className="h-4 w-4" />
-                                                            </button>
-                                                        </div>
-                                                    ) : (
-                                                        <div className="flex items-center justify-between w-full">
-                                                            <p className="text-base font-semibold text-white">
-                                                                {callout.description}
-                                                            </p>
-                                                            <button
-                                                                onClick={() => handleFieldEdit(callout, 'description')}
-                                                                className="ml-2 text-gray-400 hover:text-indigo-600 transition-colors"
-                                                                aria-label="Beschreibung bearbeiten"
-                                                            >
-                                                                <PencilSquareIcon className="h-4 w-4" />
-                                                            </button>
-                                                        </div>
-                                                    )}
-                                                </div>
-                                                <div className="flex justify-between mt-4 space-x-2">
-                                                    {/* Bestehender Edit Button */}
-                                                    <button
-                                                        onClick={() => navigate(`/${callout.slug}/edit`)}
-                                                        className="inline-flex items-center px-3 py-1 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors"
-                                                    >
-                                                        <PencilSquareIcon className="h-4 w-4 mr-1" />
-                                                        <span className="hidden sm:inline text-sm">Seite bearbeiten</span>
-                                                    </button>
-
-                                                    {/* Neuer Delete Button */}
-                                                    <button
-                                                        onClick={() => {
-                                                            if (window.confirm('Bist du sicher, dass du diesen Artikel löschen möchtest? Dies kann nicht rückgängig gemacht werden.')) {
-                                                                handleDelete(callout);
-                                                            }
-                                                        }}
-                                                        className="inline-flex items-center px-3 py-1 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors group"
-                                                    >
-                                                        <TrashIcon className="h-4 w-4 group-hover:animate-bounce" />
-                                                        <span className="hidden sm:inline ml-1 text-sm">Löschen</span>
-                                                    </button>
-                                                </div>
+                                        <div className="mt-4 space-y-3">
+                                            {/* Name field */}
+                                            <div className="flex items-center justify-between">
+                                                {editableFields?.id === callout.id && editableFields.field === 'name' ? (
+                                                    <div className="flex items-center space-x-2 w-full">
+                                                        <input
+                                                            type="text"
+                                                            value={editValue}
+                                                            onChange={(e) => setEditValue(e.target.value)}
+                                                            className="text-sm text-white w-full bg-transparent border-b border-gray-300 focus:border-indigo-500 focus:outline-none p-1"
+                                                            autoFocus
+                                                        />
+                                                        <button onClick={() => handleFieldSave(callout)} className="text-green-600">
+                                                            <CheckIcon className="h-4 w-4" />
+                                                        </button>
+                                                        <button onClick={() => setEditableFields(null)} className="text-red-600">
+                                                            <XMarkIcon className="h-4 w-4" />
+                                                        </button>
+                                                    </div>
+                                                ) : (
+                                                    <div className="flex items-center justify-between w-full">
+                                                        <h3 className="text-sm text-white">{callout.name}</h3>
+                                                        <button
+                                                            onClick={() => handleFieldEdit(callout, 'name')}
+                                                            className="ml-2 text-gray-400 hover:text-indigo-600 transition-colors"
+                                                        >
+                                                            <PencilSquareIcon className="h-4 w-4" />
+                                                        </button>
+                                                    </div>
+                                                )}
                                             </div>
-                                        </>
-                                    )}
-                                </motion.div>
-                            ))}
-                        </motion.div>
+
+                                            {/* Description field */}
+                                            <div className="flex items-center justify-between mt-1">
+                                                {editableFields?.id === callout.id && editableFields.field === 'description' ? (
+                                                    <div className="flex items-center space-x-2 w-full">
+                                                        <input
+                                                            type="text"
+                                                            value={editValue}
+                                                            onChange={(e) => setEditValue(e.target.value)}
+                                                            className="text-base font-semibold text-white w-full bg-transparent border-b border-gray-300 focus:border-indigo-500 focus:outline-none p-1"
+                                                            autoFocus
+                                                        />
+                                                        <button onClick={() => handleFieldSave(callout)} className="text-green-600">
+                                                            <CheckIcon className="h-4 w-4" />
+                                                        </button>
+                                                        <button onClick={() => setEditableFields(null)} className="text-red-600">
+                                                            <XMarkIcon className="h-4 w-4" />
+                                                        </button>
+                                                    </div>
+                                                ) : (
+                                                    <div className="flex items-center justify-between w-full">
+                                                        <p className="text-base font-semibold text-white">
+                                                            {callout.description}
+                                                        </p>
+                                                        <button
+                                                            onClick={() => handleFieldEdit(callout, 'description')}
+                                                            className="ml-2 text-gray-400 hover:text-indigo-600 transition-colors"
+                                                            aria-label="Beschreibung bearbeiten"
+                                                        >
+                                                            <PencilSquareIcon className="h-4 w-4" />
+                                                        </button>
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <div className="flex flex-col sm:flex-row gap-2">
+                                                <button
+                                                    onClick={() => navigate(`/${callout.slug}/edit`)}
+                                                    className="flex items-center justify-center px-3 py-1 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors"
+                                                >
+                                                    <PencilSquareIcon className="h-4 w-4 mr-1" />
+                                                    <span>Bearbeiten</span>
+                                                </button>
+
+                                                <button
+                                                    onClick={() => {
+                                                        if (window.confirm('Bist du sicher?')) {
+                                                            handleDelete(callout);
+                                                        }
+                                                    }}
+                                                    className="flex items-center justify-center px-3 py-1 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
+                                                >
+                                                    <TrashIcon className="h-4 w-4 mr-1" />
+                                                    <span>Löschen</span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </>
+                                )}
+                            </motion.div>
+                        ))}
                     </div>
                 </div>
             </div>
+
+            {/* Image Modal */}
             {showImageModal && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-gray-800 p-6 rounded-lg w-96">
+                    <div className="bg-gray-800 p-6 rounded-lg w-96 max-w-[90vw]">
                         <h3 className="text-white text-lg mb-4">Bild ändern</h3>
                         <div className="space-y-4">
                             <div>
@@ -614,5 +601,4 @@ const AdminDashboard = () => {
     );
 };
 
-// Export the component properly
 export default AdminDashboard;
