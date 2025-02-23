@@ -133,7 +133,7 @@ export default function RichTextEditor({ initialContent, onSave }: RichTextEdito
         editorProps: {
             attributes: {
                 class: 'prose prose-lg max-w-none focus:outline-none min-h-[300px] prose-headings:text-white prose-p:text-white prose-strong:text-white prose-ul:text-white prose-li:text-white prose-ul:list-disc prose-ul:ml-4 prose-li:marker:text-white [&_p]:whitespace-pre-wrap [&_p]:break-words',
-                style: 'font-size: 16px; touch-action: pan-y; overflow-x: hidden;',
+                style: 'font-size: 16px;',
             },
         },
     })
@@ -244,81 +244,80 @@ export default function RichTextEditor({ initialContent, onSave }: RichTextEdito
     if (!editor) return null
 
     return (
-        <div className="bg-gray-800 rounded-lg p-2 sm:p-4 w-full max-w-full overflow-hidden">
-            <div className="flex flex-wrap items-center gap-1 sm:gap-2 mb-4 border-b border-gray-700 pb-4">
+        <div className="bg-gray-800 rounded-lg p-4">
+            <div className="flex items-center gap-2 mb-4 border-b border-gray-700 pb-4">
                 <button
                     onClick={() => editor.chain().focus().toggleBold().run()}
-                    className={`p-1.5 sm:p-2 rounded ${editor.isActive('bold') ? 'bg-gray-700' : ''}`}
+                    className={`p-2 rounded ${editor.isActive('bold') ? 'bg-gray-700' : ''}`}
                 >
-                    <BoldIcon className="w-4 h-4 sm:w-5 sm:h-5" />
+                    <BoldIcon className="w-5 h-5" />
                 </button>
                 <button
                     onClick={() => editor.chain().focus().toggleItalic().run()}
-                    className={`p-1.5 sm:p-2 rounded ${editor.isActive('italic') ? 'bg-gray-700' : ''}`}
+                    className={`p-2 rounded ${editor.isActive('italic') ? 'bg-gray-700' : ''}`}
                 >
-                    <ItalicIcon className="w-4 h-4 sm:w-5 sm:h-5" />
+                    <ItalicIcon className="w-5 h-5" />
                 </button>
                 <button
                     onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
-                    className={`p-1.5 sm:p-2 rounded ${editor.isActive('heading', { level: 1 }) ? 'bg-gray-700' : ''}`}
+                    className={`p-2 rounded ${editor.isActive('heading', { level: 1 }) ? 'bg-gray-700' : ''}`}
                 >
-                    <Heading1Icon className="w-4 h-4 sm:w-5 sm:h-5" />
+                    <Heading1Icon className="w-5 h-5" />
                 </button>
                 <button
                     onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-                    className={`p-1.5 sm:p-2 rounded ${editor.isActive('heading', { level: 2 }) ? 'bg-gray-700' : ''}`}
+                    className={`p-2 rounded ${editor.isActive('heading', { level: 2 }) ? 'bg-gray-700' : ''}`}
                 >
-                    <Heading2Icon className="w-4 h-4 sm:w-5 sm:h-5" />
+                    <Heading2Icon className="w-5 h-5" />
                 </button>
                 <button
                     onClick={() => editor.chain().focus().toggleBulletList().run()}
-                    className={`p-1.5 sm:p-2 rounded ${editor.isActive('bulletList') ? 'bg-gray-700' : ''}`}
+                    className={`p-2 rounded ${editor.isActive('bulletList') ? 'bg-gray-700' : ''}`}
                 >
-                    <ListIcon className="w-4 h-4 sm:w-5 sm:h-5" />
+                    <ListIcon className="w-5 h-5" />
                 </button>
                 <button
                     onClick={addImage}
-                    className="p-1.5 sm:p-2 rounded hover:bg-gray-700"
+                    className="p-2 rounded hover:bg-gray-700"
                 >
-                    <ImageIcon className="w-4 h-4 sm:w-5 sm:h-5" />
+                    <ImageIcon className="w-5 h-5" />
                 </button>
 
                 <button
                     onClick={addLink}
-                    className={`p-1.5 sm:p-2 rounded ${editor?.isActive('link') ? 'bg-gray-700' : ''}`}
+                    className={`p-2 rounded ${editor?.isActive('link') ? 'bg-gray-700' : ''}`}
                 >
-                    <LinkIcon className="w-4 h-4 sm:w-5 sm:h-5" />
+                    <LinkIcon className="w-5 h-5" />
                 </button>
 
                 <button
                     onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-                    className={`p-1.5 sm:p-2 rounded hover:bg-gray-700`}
+                    className={`p-2 rounded hover:bg-gray-700`}
                 >
-                    <SmileIcon className="w-4 h-4 sm:w-5 sm:h-5" />
+                    <SmileIcon className="w-5 h-5" />
                 </button>
 
                 <button
                     onClick={addButton}
-                    className="p-1.5 sm:p-2 rounded hover:bg-gray-700"
+                    className="p-2 rounded hover:bg-gray-700"
                     title="Als Button formatieren"
                 >
-                    <Square className="w-4 h-4 sm:w-5 sm:h-5" />
+                    <Square className="w-5 h-5" />
                 </button>
             </div>
 
             {showEmojiPicker && (
-                <div className="absolute z-10 mt-2 max-w-[90vw] sm:max-w-none">
+                <div className="absolute z-10 mt-2">
                     <EmojiPicker
                         onEmojiClick={onEmojiClick}
                         autoFocusSearch={false}
-                        width={window.innerWidth < 640 ? '300px' : '350px'}
                     />
                 </div>
             )}
 
             {showImageModal && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-gray-800 p-4 sm:p-6 rounded-lg w-full max-w-[90vw] sm:max-w-md">
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-gray-800 p-6 rounded-lg w-96">
                         <h3 className="text-white text-lg mb-4">Bild einfügen</h3>
                         <div className="space-y-4">
                             <div>
@@ -362,8 +361,8 @@ export default function RichTextEditor({ initialContent, onSave }: RichTextEdito
             )}
 
             {showLinkModal && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-gray-800 p-4 sm:p-6 rounded-lg w-full max-w-[90vw] sm:max-w-md">
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-gray-800 p-6 rounded-lg w-96">
                         <h3 className="text-white text-lg mb-4">Link einfügen</h3>
                         <div className="space-y-4">
                             <div>
@@ -396,7 +395,7 @@ export default function RichTextEditor({ initialContent, onSave }: RichTextEdito
                 </div>
             )}
 
-            <div className="min-h-[300px] overflow-y-auto overflow-x-hidden max-w-full touch-pan-y">
+            <div className="min-h-[300px] overflow-y-auto overflow-x-hidden max-w-full [&_ul]:list-disc [&_ul]:ml-4 [&_p]:whitespace-pre-wrap [&_p]:mb-4">
                 <div className="w-full" style={{ maxWidth: '100%', overflowX: 'hidden' }}>
                     <EditorContent editor={editor} />
                 </div>
@@ -404,7 +403,7 @@ export default function RichTextEditor({ initialContent, onSave }: RichTextEdito
             <div className="mt-4 flex justify-end">
                 <button
                     onClick={() => onSave(editor.getHTML())}
-                    className="w-full sm:w-auto px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                    className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
                 >
                     Speichern
                 </button>

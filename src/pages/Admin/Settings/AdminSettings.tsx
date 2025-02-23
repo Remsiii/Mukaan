@@ -196,7 +196,6 @@ export default function AdminSettings() {
     useEffect(() => {
         const init = async () => {
             if (!isAuthenticated) {
-                console.log('Not authenticated, redirecting to login');
                 navigate('/login');
                 return;
             }

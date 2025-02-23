@@ -37,7 +37,6 @@ export default function LoginPage() {
         setError(null);
 
         try {
-            console.log('Attempting login with username:', formData.email); // Debug log
             await login(formData.email, formData.password);
             navigate('/admin', { replace: true });
         } catch (error: any) {

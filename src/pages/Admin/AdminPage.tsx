@@ -60,7 +60,6 @@ const AdminDashboard = () => {
     // Simplified auth check
     useEffect(() => {
         if (!isAuthenticated) {
-            console.log('Not authenticated, redirecting to login');
             navigate('/login');
             return;
         }
@@ -104,13 +103,12 @@ const AdminDashboard = () => {
         try {
 
             // First try to delete the HTML content
-            const { error: htmlError, data: htmlData } = await supabase
+            const { error: htmlError } = await supabase
                 .from('calloutshtml')
                 .delete()
                 .eq('slug', callout.slug)
                 .select();
 
-            console.log('HTML delete response:', htmlData, htmlError);
 
             if (htmlError) {
                 console.error('HTML delete error:', htmlError);
@@ -118,13 +116,12 @@ const AdminDashboard = () => {
             }
 
             // Then delete the callout
-            const { error, data } = await supabase
+            const { error } = await supabase
                 .from('callouts')
                 .delete()
                 .eq('id', callout.id)
                 .select();
 
-            console.log('Callout delete response:', data, error);
 
             if (error) {
                 console.error('Callout delete error:', error);
@@ -186,9 +183,8 @@ const AdminDashboard = () => {
         if (!editableFields) return;
 
         try {
-            console.log('Saving field:', editableFields.field, 'with value:', editValue);
 
-            const { error, data } = await supabase
+            const { error } = await supabase
                 .from('callouts')
                 .update({ [editableFields.field]: editValue })
                 .eq('id', callout.id)
@@ -199,7 +195,6 @@ const AdminDashboard = () => {
                 throw error;
             }
 
-            console.log('Update response:', data);
 
             // Refresh the callouts list
             await loadCallouts();
@@ -217,7 +212,6 @@ const AdminDashboard = () => {
 
         try {
             setUploading(true);
-            console.log('Uploading image for callout:', callout);
 
             const options = {
                 maxSizeMB: 1,
@@ -230,11 +224,10 @@ const AdminDashboard = () => {
             const fileName = `${Date.now()}.jpg`;
             const filePath = `callout-images/${fileName}`;
 
-            const { error: uploadError, data } = await supabase.storage
+            const { error: uploadError } = await supabase.storage
                 .from('card-images')
                 .upload(filePath, compressedFile);
 
-            console.log('Upload response:', data, uploadError);
 
             if (uploadError) throw uploadError;
 
@@ -248,7 +241,6 @@ const AdminDashboard = () => {
                 .eq('id', callout.id)
                 .select();
 
-            console.log('Image update response:', updateError);
 
             if (updateError) throw updateError;
 

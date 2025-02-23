@@ -68,7 +68,6 @@ export default function EditCalloutDetailPage() {
                     setSelectedCategory(calloutData.category)
                 }
             } catch (error) {
-                console.log('Kein existierender Content gefunden')
                 setTitle('')
             } finally {
                 setLoading(false)

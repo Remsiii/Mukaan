@@ -6,7 +6,6 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
     const location = useLocation();
 
     if (!isAuthenticated) {
-        console.log('Not authenticated, redirecting to login');
         return <Navigate to="/login" state={{ from: location }} replace />;
     }
 

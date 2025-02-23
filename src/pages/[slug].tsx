@@ -42,7 +42,6 @@ export default function DetailPage() {
           .eq('slug', slug)
           .maybeSingle();  // Verwende maybeSingle statt single, da es optional sein könnte
 
-        console.log('Raw HTML data:', htmlData); // Debug log
 
         if (htmlError) {
           console.error("HTML Content error:", htmlError);
@@ -51,10 +50,8 @@ export default function DetailPage() {
         }
 
         if (htmlData) {
-          console.log('Setting HTML content:', htmlData.html_content);
           setHtmlContent(htmlData.html_content);
         } else {
-          console.log('No HTML content found for slug:', slug);
           setHtmlContent(null);
         }
 
