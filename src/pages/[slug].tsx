@@ -12,6 +12,8 @@ export default function DetailPage() {
 
   useEffect(() => {
     const fetchCalloutData = async () => {
+      if (!slug) return;
+
       try {
         // Lade Callout-Daten
         const { data: calloutData, error: calloutError } = await supabase
@@ -20,31 +22,39 @@ export default function DetailPage() {
           .eq('slug', slug)
           .single()
 
-        if (calloutError) throw calloutError
-
-        // Lade HTML-Content
-        const { data: htmlData, error: htmlError } = await supabase
-          .from('calloutshtml')
-          .select('html_content')
-          .eq('slug', slug)
-          .single()
-
-        if (htmlError && !htmlError.message.includes('after')) {
-          console.error("HTML Content error:", htmlError)
+        if (calloutError) {
+          console.error('Error fetching callout:', calloutError);
+          navigate('/');
+          return;
         }
 
-        setCallout(calloutData)
-        setHtmlContent(htmlData?.html_content || null)
+        setCallout(calloutData);
+
+        // Lade HTML-Content nur wenn callout existiert
+        if (calloutData) {
+          const { data: htmlData, error: htmlError } = await supabase
+            .from('calloutshtml')
+            .select('html_content')
+            .eq('slug', slug)
+            .maybeSingle()
+
+          if (htmlError) {
+            console.error("HTML Content error:", htmlError);
+            return;
+          }
+
+          setHtmlContent(htmlData?.html_content || null);
+        }
       } catch (error) {
-        console.error('Error fetching data:', error)
-        navigate('/')
+        console.error('Error fetching data:', error);
+        navigate('/');
       }
     }
 
-    fetchCalloutData()
-  }, [slug, navigate])
+    fetchCalloutData();
+  }, [slug, navigate]);
 
-  if (!callout) return null
+  if (!callout) return null;
 
   const containerVariants = {
     hidden: { opacity: 0, y: 20 },
@@ -71,20 +81,12 @@ export default function DetailPage() {
         initial="hidden"
         animate="visible"
       >
-
-        {/* Content section */}
         <motion.div
           className="relative px-4 sm:px-6 lg:px-8 mt-12"
           variants={contentVariants}
         >
           <div className="mx-auto max-w-3xl overflow-hidden">
-            {/* Main Image */}
-            <div className="mb-12">
-              <img
 
-                className="w-full rounded-lg shadow-lg"
-              />
-            </div>
 
             {/* HTML Content Section */}
             {htmlContent && (
@@ -105,5 +107,5 @@ export default function DetailPage() {
         </motion.div>
       </motion.div>
     </div>
-  )
+  );
 }

@@ -52,27 +52,8 @@ export default function Category() {
         return;
       }
 
-      // Für jedes Callout: hole den HTML-Inhalt
-      const enrichedCallouts = await Promise.all(
-        data.map(async (callout: any) => {
-          const { data: htmlData, error: htmlError } = await supabase
-            .from('calloutshtml')
-            .select('html_content, slug_suffix')
-            .eq('slug', callout.slug)
-            .single();
-          if (htmlError) {
-            console.error("Fehler beim Laden des HTML-Inhalts für slug", callout.slug, htmlError);
-            return { ...callout, html_content: null };
-          }
-          return {
-            ...callout,
-            html_content: htmlData?.html_content || null
-          };
-        })
-      );
-
       // Sortiere nach created_at, neueste zuerst
-      const sortedCallouts = enrichedCallouts
+      const sortedCallouts = data
         .filter(callout => callout.created_at)
         .sort((a, b) => {
           return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
